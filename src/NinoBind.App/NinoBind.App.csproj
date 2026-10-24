@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>NinoBind</RootNamespace>
+    <AssemblyName>NinoBind</AssemblyName>
+    <ApplicationTitle>NinoBind</ApplicationTitle>
+    <Product>NinoBind</Product>
+    <Description>Universal Keyboard &amp; Mouse Configurator</Description>
+    <Version>0.1.0</Version>
+    <Company>NinoBind</Company>
+    <Copyright>NinoBind</Copyright>
+    <ApplicationIcon>Assets\ninobind.ico</ApplicationIcon>
+    <RuntimeIdentifier Condition="'$(PublishSingleFile)' == 'true'">win-x64</RuntimeIdentifier>
+    <SelfContained Condition="'$(PublishSingleFile)' == 'true'">true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Assets\ninobind.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NinoBind.Core\NinoBind.Core.csproj" />
+    <ProjectReference Include="..\NinoBind.Input\NinoBind.Input.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,30 @@
+<UserControl x:Class="NinoBind.Views.MacrosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel Margin="28,24">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Macros" Style="{StaticResource TitleText}" />
+            <TextBlock x:Name="IntroText" Style="{StaticResource BodyText}" Margin="0,8,0,12" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Content="Nova" Style="{StaticResource PrimaryButton}" Click="AddClicked" AutomationProperties.Name="Nova macro" />
+                <Button Content="Editar" Style="{StaticResource ActionButton}" Click="EditClicked" AutomationProperties.Name="Editar macro" />
+                <Button Content="Duplicar" Style="{StaticResource ActionButton}" Click="DuplicateClicked" AutomationProperties.Name="Duplicar macro" />
+                <Button Content="Excluir" Style="{StaticResource ActionButton}" Click="DeleteClicked" AutomationProperties.Name="Excluir macro" />
+                <Button Content="Testar" Style="{StaticResource ActionButton}" Click="TestClicked" AutomationProperties.Name="Testar macro" />
+                <Button Content="Parar todas" Style="{StaticResource ActionButton}" Click="StopClicked" AutomationProperties.Name="Parar todas as macros" />
+            </StackPanel>
+        </StackPanel>
+        <TextBlock x:Name="StatusText" DockPanel.Dock="Bottom" Style="{StaticResource BodyText}" Margin="0,8,0,0" />
+        <ListView x:Name="MacroList" AutomationProperties.Name="Lista de macros" MouseDoubleClick="EditClicked">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Nome" DisplayMemberBinding="{Binding Name}" Width="220" />
+                    <GridViewColumn Header="Passos" DisplayMemberBinding="{Binding Steps}" Width="80" />
+                    <GridViewColumn Header="Repetição" DisplayMemberBinding="{Binding Repeat}" Width="170" />
+                    <GridViewColumn Header="Atraso total" DisplayMemberBinding="{Binding Delay}" Width="120" />
+                    <GridViewColumn Header="Bindings" DisplayMemberBinding="{Binding Uses}" Width="90" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</UserControl>

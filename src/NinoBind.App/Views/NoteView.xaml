@@ -1,0 +1,8 @@
+<UserControl x:Class="NinoBind.Views.NoteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="28,24">
+        <TextBlock x:Name="TitleText" Style="{StaticResource TitleText}" />
+        <TextBlock x:Name="MessageText" Style="{StaticResource BodyText}" Margin="0,12,0,0" MaxWidth="640" HorizontalAlignment="Left" />
+    </StackPanel>
+</UserControl>

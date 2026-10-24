@@ -1,0 +1,19 @@
+NinoBind - Universal Keyboard & Mouse Configurator
+Windows 10 e 11, x64. Não precisa de .NET instalado nem de administrador.
+
+Instalar
+  Clique com o botão direito em install.ps1 e escolha "Executar com o PowerShell",
+  ou rode no PowerShell, dentro desta pasta:
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+  O instalador mostra as mudanças e pede confirmação antes de gravar.
+  Destino: %LOCALAPPDATA%\Programs\NinoBind, com atalho no menu Iniciar.
+
+Desinstalar
+  Configurações do Windows > Aplicativos instalados > NinoBind > Desinstalar,
+  ou rode uninstall.ps1 na pasta instalada.
+  As configurações em %LOCALAPPDATA%\NinoBind ficam, a não ser que você use -RemoveUserData.
+
+Sem instalar
+  NinoBind.exe também roda direto desta pasta.
+
+Emergency Stop: Ctrl + Alt + Pause.

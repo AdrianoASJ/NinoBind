@@ -1,0 +1,53 @@
+<Window x:Class="NinoBind.Views.BindingEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Binding" Width="520" Height="560" ResizeMode="NoResize" Style="{StaticResource AppWindow}" WindowStartupLocation="CenterOwner">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <TextBlock Text="Dispositivo" Style="{StaticResource BodyText}" />
+            <ComboBox x:Name="DeviceBox" Margin="0,4,0,10" AutomationProperties.Name="Dispositivo" />
+            <TextBlock Text="Perfil" Style="{StaticResource BodyText}" />
+            <ComboBox x:Name="ProfileBox" Margin="0,4,0,10" DisplayMemberPath="Name" AutomationProperties.Name="Perfil" />
+            <TextBlock Text="Entrada" Style="{StaticResource BodyText}" />
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,10">
+                <TextBlock x:Name="TriggerText" Style="{StaticResource BodyText}" Width="220" VerticalAlignment="Center" Text="Não escolhida" />
+                <Button Content="Capturar próxima" Style="{StaticResource ActionButton}" Click="CaptureTriggerClicked" AutomationProperties.Name="Capturar próxima entrada" />
+            </StackPanel>
+            <TextBlock Text="Ação" Style="{StaticResource BodyText}" />
+            <ComboBox x:Name="ActionBox" Margin="0,4,0,10" SelectionChanged="ActionChanged" AutomationProperties.Name="Tipo de ação" />
+            <StackPanel x:Name="KeyPanel">
+                <TextBlock Text="Tecla de saída" Style="{StaticResource BodyText}" />
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,10">
+                    <TextBlock x:Name="OutputText" Style="{StaticResource BodyText}" Width="220" VerticalAlignment="Center" Text="Não escolhida" />
+                    <Button Content="Capturar tecla" Style="{StaticResource ActionButton}" Click="CaptureOutputClicked" AutomationProperties.Name="Capturar tecla de saída" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="ChordPanel" Visibility="Collapsed">
+                <TextBlock Text="Atalho" Style="{StaticResource BodyText}" />
+                <WrapPanel Margin="0,4,0,10">
+                    <CheckBox x:Name="CtrlBox" Content="Ctrl" Margin="0,0,12,8" />
+                    <CheckBox x:Name="ShiftBox" Content="Shift" Margin="0,0,12,8" />
+                    <CheckBox x:Name="AltBox" Content="Alt" Margin="0,0,12,8" />
+                    <CheckBox x:Name="WinBox" Content="Win" Margin="0,0,12,8" />
+                </WrapPanel>
+            </StackPanel>
+            <StackPanel x:Name="MousePanel" Visibility="Collapsed">
+                <TextBlock Text="Botão de saída" Style="{StaticResource BodyText}" />
+                <ComboBox x:Name="MouseBox" Margin="0,4,0,10" AutomationProperties.Name="Botão de saída" />
+            </StackPanel>
+            <StackPanel x:Name="TextPanel" Visibility="Collapsed">
+                <TextBlock Text="Texto" Style="{StaticResource BodyText}" />
+                <TextBox x:Name="TextBox" Margin="0,4,0,10" MaxLength="256" AutomationProperties.Name="Texto do binding" />
+            </StackPanel>
+            <StackPanel x:Name="MacroPanel" Visibility="Collapsed">
+                <TextBlock Text="Macro" Style="{StaticResource BodyText}" />
+                <ComboBox x:Name="MacroBox" Margin="0,4,0,10" DisplayMemberPath="Name" AutomationProperties.Name="Macro" />
+            </StackPanel>
+            <TextBlock x:Name="HintText" Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancelar" Style="{StaticResource ActionButton}" Click="CancelClicked" IsCancel="True" />
+                <Button Content="Salvar" Style="{StaticResource PrimaryButton}" Click="SaveClicked" IsDefault="True" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

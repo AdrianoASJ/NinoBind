@@ -1,0 +1,52 @@
+<UserControl x:Class="NinoBind.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="28,24">
+            <TextBlock Text="Configurações" Style="{StaticResource TitleText}" />
+            <TextBlock Style="{StaticResource BodyText}" Margin="0,8,0,20"
+                       Text="Nada aqui muda sem você marcar ou desmarcar a opção. O NinoBind não pede privilégios de administrador." />
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                <StackPanel>
+                    <CheckBox x:Name="StartupBox" Content="Iniciar com o Windows (abre na bandeja)" Foreground="{StaticResource TextBrush}"
+                              Click="StartupClicked" AutomationProperties.Name="Iniciar com o Windows" />
+                    <TextBlock x:Name="StartupText" Style="{StaticResource BodyText}" Margin="24,4,0,0" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                <StackPanel>
+                    <CheckBox x:Name="TrayBox" Content="Fechar a janela mantém o NinoBind na bandeja" Foreground="{StaticResource TextBrush}"
+                              Click="TrayClicked" AutomationProperties.Name="Fechar para a bandeja" />
+                    <TextBlock Style="{StaticResource BodyText}" Margin="24,4,0,0"
+                               Text="O ícone fica na bandeja enquanto o programa roda. Use Sair no menu do ícone para encerrar." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+                <StackPanel>
+                    <CheckBox x:Name="EngineBox" Content="Ativar o motor ao abrir" Foreground="{StaticResource TextBrush}"
+                              Click="EngineClicked" AutomationProperties.Name="Ativar o motor ao abrir" />
+                    <TextBlock Style="{StaticResource BodyText}" Margin="24,4,0,0"
+                               Text="Aplica os bindings do perfil ativo logo que o programa abre." />
+                </StackPanel>
+            </Border>
+
+            <TextBlock x:Name="StatusText" Style="{StaticResource BodyText}" Margin="0,0,0,16" AutomationProperties.LiveSetting="Polite" />
+
+            <TextBlock Text="Emergency Stop" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock x:Name="EmergencyText" Margin="0,4,0,16" TextWrapping="Wrap" />
+            <TextBlock Text="Motor" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock x:Name="EngineHotkeyText" Margin="0,4,0,16" TextWrapping="Wrap" />
+            <TextBlock Text="Atalhos" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock Margin="0,4,0,16" TextWrapping="Wrap" Text="Ctrl + 1 a Ctrl + 6 trocam de seção. Scroll Lock liga e desliga o motor." />
+            <TextBlock Text="Idioma" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock x:Name="LanguageText" Margin="0,4,0,16" />
+            <TextBlock Text="Arquivo de configuração" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock x:Name="PathText" Margin="0,4,0,16" TextWrapping="Wrap" />
+            <TextBlock Text="Log" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock x:Name="LogText" Margin="0,4,0,0" TextWrapping="Wrap" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

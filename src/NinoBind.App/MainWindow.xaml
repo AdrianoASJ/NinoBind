@@ -1,0 +1,59 @@
+<Window x:Class="NinoBind.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NinoBind"
+        Icon="Assets/ninobind.ico"
+        Style="{StaticResource AppWindow}"
+        Width="1120"
+        Height="740"
+        MinWidth="960"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        PreviewKeyDown="WindowKeyDown">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="248" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource NavBrush}">
+            <DockPanel Margin="8,20,8,16">
+                <StackPanel DockPanel.Dock="Top" Margin="16,0,16,28">
+                    <Grid Width="28" Height="28" HorizontalAlignment="Left">
+                        <Border Width="16" Height="16" CornerRadius="4" Background="{StaticResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <Border Width="16" Height="16" CornerRadius="4" BorderBrush="{StaticResource AccentBrush}" BorderThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                    </Grid>
+                    <TextBlock Text="NinoBind" FontSize="20" FontWeight="SemiBold" Margin="0,12,0,0" />
+                    <TextBlock Text="Teclado e mouse" Style="{StaticResource BodyText}" Margin="0,2,0,0" />
+                </StackPanel>
+                <TextBlock x:Name="StatusText"
+                           DockPanel.Dock="Bottom"
+                           Text="Motor não iniciado"
+                           Foreground="{StaticResource MutedBrush}"
+                           TextWrapping="Wrap"
+                           AutomationProperties.LiveSetting="Polite"
+                           Margin="16,10,16,4" />
+                <Button x:Name="EngineButton"
+                        DockPanel.Dock="Bottom"
+                        Content="Ativar motor"
+                        Style="{StaticResource PrimaryButton}"
+                        Margin="8,0"
+                        Click="EngineClicked"
+                        ToolTip="Scroll Lock"
+                        AutomationProperties.Name="Ativar ou desativar o motor de remapeamento"
+                        AutomationProperties.AcceleratorKey="Scroll Lock" />
+                <StackPanel>
+                    <RadioButton x:Name="OverviewNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Visão geral" IsChecked="True" Checked="SectionChanged" Tag="overview" AutomationProperties.Name="Visão geral" AutomationProperties.AcceleratorKey="Ctrl+1" ToolTip="Ctrl + 1" />
+                    <RadioButton x:Name="DevicesNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Dispositivos" Checked="SectionChanged" Tag="devices" AutomationProperties.Name="Dispositivos" AutomationProperties.AcceleratorKey="Ctrl+2" ToolTip="Ctrl + 2" />
+                    <RadioButton x:Name="BindingsNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Bindings" Checked="SectionChanged" Tag="bindings" AutomationProperties.Name="Bindings" AutomationProperties.AcceleratorKey="Ctrl+3" ToolTip="Ctrl + 3" />
+                    <RadioButton x:Name="MacrosNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Macros" Checked="SectionChanged" Tag="macros" AutomationProperties.Name="Macros" AutomationProperties.AcceleratorKey="Ctrl+4" ToolTip="Ctrl + 4" />
+                    <RadioButton x:Name="ProfilesNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Perfis" Checked="SectionChanged" Tag="profiles" AutomationProperties.Name="Perfis" AutomationProperties.AcceleratorKey="Ctrl+5" ToolTip="Ctrl + 5" />
+                    <RadioButton x:Name="SettingsNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Configurações" Checked="SectionChanged" Tag="settings" AutomationProperties.Name="Configurações" AutomationProperties.AcceleratorKey="Ctrl+6" ToolTip="Ctrl + 6" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Column="0" HorizontalAlignment="Right" Width="1" Background="{StaticResource LineBrush}" />
+        <ContentControl x:Name="SectionHost" Grid.Column="1" Margin="12,8,12,8" />
+    </Grid>
+</Window>
