@@ -22,7 +22,7 @@ function New-IconFrame([int]$size) {
     $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
     $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $graphics.Clear([System.Drawing.Color]::Transparent)
-    $accent = [System.Drawing.Color]::FromArgb(0x3D, 0xDC, 0xB0)
+    $accent = [System.Drawing.Color]::FromArgb(0xF0, 0xCC, 0x38)
     $brush = New-Object System.Drawing.SolidBrush $accent
     $pen = New-Object System.Drawing.Pen $accent, ([Math]::Max(1.5, 3 * $scale))
     $filled = New-RoundedPath (2 * $scale) (2 * $scale) (18 * $scale) (18 * $scale) (4 * $scale)

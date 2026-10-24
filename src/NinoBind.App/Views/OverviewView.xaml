@@ -3,45 +3,65 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="28,24">
-            <TextBlock Text="Visão geral" Style="{StaticResource TitleText}" />
-            <TextBlock x:Name="EngineText" Style="{StaticResource BodyText}" Margin="0,8,0,20" />
+            <TextBlock Text="O QUE ESTÁ ATIVO" Style="{StaticResource EyebrowText}" />
+            <TextBlock Style="{StaticResource TitleText}">
+                <Run Text="Visão " />
+                <Run Text="geral" Foreground="{StaticResource AccentBrush}" />
+            </TextBlock>
+            <TextBlock x:Name="EngineText" Style="{StaticResource BodyText}" Margin="0,10,0,24" />
             <Border x:Name="WarningBanner"
-                    Background="#3A2E22"
+                    Background="{StaticResource SelectionBrush}"
                     BorderBrush="{StaticResource WarnBrush}"
                     BorderThickness="1"
-                    CornerRadius="10"
-                    Padding="14"
+                    CornerRadius="16"
+                    Padding="16"
                     Margin="0,0,0,16"
                     Visibility="Collapsed">
                 <TextBlock x:Name="WarningText" TextWrapping="Wrap" />
             </Border>
             <UniformGrid Columns="2" Margin="0,0,0,8">
                 <Border Style="{StaticResource CardBorder}" Margin="0,0,8,8">
-                    <StackPanel>
-                        <TextBlock Text="Dispositivos" Foreground="{StaticResource MutedBrush}" />
-                        <TextBlock x:Name="DevicesValue" FontSize="22" FontWeight="SemiBold" Margin="0,8,0,0" />
-                    </StackPanel>
+                    <Grid>
+                        <TextBlock Text="01" Style="{StaticResource EyebrowText}" Margin="0" HorizontalAlignment="Left" />
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,0,0" />
+                        <StackPanel Margin="0,28,0,0">
+                            <TextBlock Text="DISPOSITIVOS" Style="{StaticResource SectionText}" />
+                            <TextBlock x:Name="DevicesValue" FontSize="26" FontWeight="Light" />
+                        </StackPanel>
+                    </Grid>
                 </Border>
                 <Border Style="{StaticResource CardBorder}" Margin="8,0,0,8">
-                    <StackPanel>
-                        <TextBlock Text="Perfil ativo" Foreground="{StaticResource MutedBrush}" />
-                        <TextBlock x:Name="ProfileValue" FontSize="22" FontWeight="SemiBold" Margin="0,8,0,0" />
-                    </StackPanel>
+                    <Grid>
+                        <TextBlock Text="02" Style="{StaticResource EyebrowText}" Margin="0" HorizontalAlignment="Left" />
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,0,0" />
+                        <StackPanel Margin="0,28,0,0">
+                            <TextBlock Text="PERFIL ATIVO" Style="{StaticResource SectionText}" />
+                            <TextBlock x:Name="ProfileValue" FontSize="26" FontWeight="Light" />
+                        </StackPanel>
+                    </Grid>
                 </Border>
                 <Border Style="{StaticResource CardBorder}" Margin="0,8,8,0">
-                    <StackPanel>
-                        <TextBlock Text="Bindings ativos" Foreground="{StaticResource MutedBrush}" />
-                        <TextBlock x:Name="BindingsValue" FontSize="22" FontWeight="SemiBold" Margin="0,8,0,0" />
-                    </StackPanel>
+                    <Grid>
+                        <TextBlock Text="03" Style="{StaticResource EyebrowText}" Margin="0" HorizontalAlignment="Left" />
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,0,0" />
+                        <StackPanel Margin="0,28,0,0">
+                            <TextBlock Text="BINDINGS ATIVOS" Style="{StaticResource SectionText}" />
+                            <TextBlock x:Name="BindingsValue" FontSize="26" FontWeight="Light" />
+                        </StackPanel>
+                    </Grid>
                 </Border>
                 <Border Style="{StaticResource CardBorder}" Margin="8,8,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Macros" Foreground="{StaticResource MutedBrush}" />
-                        <TextBlock x:Name="MacrosValue" FontSize="22" FontWeight="SemiBold" Margin="0,8,0,0" />
-                    </StackPanel>
+                    <Grid>
+                        <TextBlock Text="04" Style="{StaticResource EyebrowText}" Margin="0" HorizontalAlignment="Left" />
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,0,0" />
+                        <StackPanel Margin="0,28,0,0">
+                            <TextBlock Text="MACROS" Style="{StaticResource SectionText}" />
+                            <TextBlock x:Name="MacrosValue" FontSize="26" FontWeight="Light" />
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </UniformGrid>
-            <TextBlock Style="{StaticResource BodyText}" Margin="0,20,0,0"
+            <TextBlock Style="{StaticResource BodyText}" Margin="0,24,0,0"
                        Text="Crie bindings em Bindings (Ctrl + 3) e macros em Macros (Ctrl + 4). Scroll Lock liga e desliga o motor. Ctrl + Alt + Pause interrompe todas as macros e pausa o motor." />
         </StackPanel>
     </ScrollViewer>

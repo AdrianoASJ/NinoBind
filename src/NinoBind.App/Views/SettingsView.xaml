@@ -3,8 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="28,24">
-            <TextBlock Text="Configurações" Style="{StaticResource TitleText}" />
-            <TextBlock Style="{StaticResource BodyText}" Margin="0,8,0,20"
+            <TextBlock Text="PREFERÊNCIAS DO APLICATIVO" Style="{StaticResource EyebrowText}" />
+            <TextBlock Style="{StaticResource TitleText}">
+                <Run Text="As " />
+                <Run Text="configurações" Foreground="{StaticResource AccentBrush}" />
+            </TextBlock>
+            <TextBlock Style="{StaticResource BodyText}" Margin="0,10,0,24"
                        Text="Nada aqui muda sem você marcar ou desmarcar a opção. O NinoBind não pede privilégios de administrador." />
 
             <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">

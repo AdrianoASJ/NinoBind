@@ -11,49 +11,86 @@
         WindowStartupLocation="CenterScreen"
         PreviewKeyDown="WindowKeyDown">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="248" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="{StaticResource NavBrush}">
+        <Border Grid.ColumnSpan="2" Height="1" Background="{StaticResource AccentBrush}" Opacity="0.85" />
+
+        <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource NavBrush}">
             <DockPanel Margin="8,20,8,16">
-                <StackPanel DockPanel.Dock="Top" Margin="16,0,16,28">
+                <StackPanel DockPanel.Dock="Top" Margin="16,0,16,20">
                     <Grid Width="28" Height="28" HorizontalAlignment="Left">
                         <Border Width="16" Height="16" CornerRadius="4" Background="{StaticResource AccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" />
                         <Border Width="16" Height="16" CornerRadius="4" BorderBrush="{StaticResource AccentBrush}" BorderThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                     </Grid>
-                    <TextBlock Text="NinoBind" FontSize="20" FontWeight="SemiBold" Margin="0,12,0,0" />
-                    <TextBlock Text="Teclado e mouse" Style="{StaticResource BodyText}" Margin="0,2,0,0" />
+                    <TextBlock Text="NinoBind" FontSize="20" FontWeight="Light" Margin="0,14,0,0" />
+                    <TextBlock Text="Teclado e mouse" Style="{StaticResource EyebrowText}" Margin="0,4,0,16" />
+                    <Border Height="1" Background="{StaticResource AccentBrush}" Opacity="0.7" />
                 </StackPanel>
-                <TextBlock x:Name="StatusText"
-                           DockPanel.Dock="Bottom"
-                           Text="Motor não iniciado"
-                           Foreground="{StaticResource MutedBrush}"
-                           TextWrapping="Wrap"
-                           AutomationProperties.LiveSetting="Polite"
-                           Margin="16,10,16,4" />
-                <Button x:Name="EngineButton"
-                        DockPanel.Dock="Bottom"
-                        Content="Ativar motor"
-                        Style="{StaticResource PrimaryButton}"
-                        Margin="8,0"
-                        Click="EngineClicked"
-                        ToolTip="Scroll Lock"
-                        AutomationProperties.Name="Ativar ou desativar o motor de remapeamento"
-                        AutomationProperties.AcceleratorKey="Scroll Lock" />
+                <StackPanel DockPanel.Dock="Bottom" Margin="8,0,8,0">
+                    <TextBlock x:Name="StatusText"
+                               Text="Motor não iniciado"
+                               Foreground="{StaticResource MutedBrush}"
+                               TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Polite"
+                               Margin="8,10,8,10" />
+                    <Button x:Name="EngineButton"
+                            Content="Ativar motor"
+                            Style="{StaticResource PrimaryButton}"
+                            Margin="0,0,0,4"
+                            Click="EngineClicked"
+                            ToolTip="Scroll Lock"
+                            AutomationProperties.Name="Ativar ou desativar o motor de remapeamento"
+                            AutomationProperties.AcceleratorKey="Scroll Lock" />
+                </StackPanel>
                 <StackPanel>
-                    <RadioButton x:Name="OverviewNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Visão geral" IsChecked="True" Checked="SectionChanged" Tag="overview" AutomationProperties.Name="Visão geral" AutomationProperties.AcceleratorKey="Ctrl+1" ToolTip="Ctrl + 1" />
-                    <RadioButton x:Name="DevicesNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Dispositivos" Checked="SectionChanged" Tag="devices" AutomationProperties.Name="Dispositivos" AutomationProperties.AcceleratorKey="Ctrl+2" ToolTip="Ctrl + 2" />
-                    <RadioButton x:Name="BindingsNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Bindings" Checked="SectionChanged" Tag="bindings" AutomationProperties.Name="Bindings" AutomationProperties.AcceleratorKey="Ctrl+3" ToolTip="Ctrl + 3" />
-                    <RadioButton x:Name="MacrosNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Macros" Checked="SectionChanged" Tag="macros" AutomationProperties.Name="Macros" AutomationProperties.AcceleratorKey="Ctrl+4" ToolTip="Ctrl + 4" />
-                    <RadioButton x:Name="ProfilesNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Perfis" Checked="SectionChanged" Tag="profiles" AutomationProperties.Name="Perfis" AutomationProperties.AcceleratorKey="Ctrl+5" ToolTip="Ctrl + 5" />
-                    <RadioButton x:Name="SettingsNav" Style="{StaticResource NavButton}" GroupName="Sections" Content="Configurações" Checked="SectionChanged" Tag="settings" AutomationProperties.Name="Configurações" AutomationProperties.AcceleratorKey="Ctrl+6" ToolTip="Ctrl + 6" />
+                    <RadioButton x:Name="OverviewNav" Style="{StaticResource NavButton}" GroupName="Sections" IsChecked="True" Checked="SectionChanged" Tag="overview" AutomationProperties.Name="Visão geral" AutomationProperties.AcceleratorKey="Ctrl+1" ToolTip="Ctrl + 1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NavIcon}" Text="&#xE80F;" />
+                            <TextBlock Text="Visão geral" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="DevicesNav" Style="{StaticResource NavButton}" GroupName="Sections" Checked="SectionChanged" Tag="devices" AutomationProperties.Name="Dispositivos" AutomationProperties.AcceleratorKey="Ctrl+2" ToolTip="Ctrl + 2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NavIcon}" Text="&#xE92E;" />
+                            <TextBlock Text="Dispositivos" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="BindingsNav" Style="{StaticResource NavButton}" GroupName="Sections" Checked="SectionChanged" Tag="bindings" AutomationProperties.Name="Bindings" AutomationProperties.AcceleratorKey="Ctrl+3" ToolTip="Ctrl + 3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NavIcon}" Text="&#xE8A5;" />
+                            <TextBlock Text="Bindings" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="MacrosNav" Style="{StaticResource NavButton}" GroupName="Sections" Checked="SectionChanged" Tag="macros" AutomationProperties.Name="Macros" AutomationProperties.AcceleratorKey="Ctrl+4" ToolTip="Ctrl + 4">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NavIcon}" Text="&#xE768;" />
+                            <TextBlock Text="Macros" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="ProfilesNav" Style="{StaticResource NavButton}" GroupName="Sections" Checked="SectionChanged" Tag="profiles" AutomationProperties.Name="Perfis" AutomationProperties.AcceleratorKey="Ctrl+5" ToolTip="Ctrl + 5">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NavIcon}" Text="&#xE77B;" />
+                            <TextBlock Text="Perfis" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="SettingsNav" Style="{StaticResource NavButton}" GroupName="Sections" Checked="SectionChanged" Tag="settings" AutomationProperties.Name="Configurações" AutomationProperties.AcceleratorKey="Ctrl+6" ToolTip="Ctrl + 6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NavIcon}" Text="&#xE713;" />
+                            <TextBlock Text="Configurações" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <Border Grid.Column="0" HorizontalAlignment="Right" Width="1" Background="{StaticResource LineBrush}" />
-        <ContentControl x:Name="SectionHost" Grid.Column="1" Margin="12,8,12,8" />
+        <Border Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Width="1" Background="{StaticResource LineBrush}" />
+        <ContentControl x:Name="SectionHost" Grid.Row="1" Grid.Column="1" Margin="12,8,12,8" />
     </Grid>
 </Window>

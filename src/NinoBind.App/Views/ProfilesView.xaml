@@ -3,8 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="28,24">
         <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="Perfis" Style="{StaticResource TitleText}" />
-            <TextBlock Style="{StaticResource BodyText}" Margin="0,8,0,12"
+            <TextBlock Text="CONJUNTOS DE BINDINGS" Style="{StaticResource EyebrowText}" />
+            <TextBlock Style="{StaticResource TitleText}">
+                <Run Text="Os seus " />
+                <Run Text="perfis" Foreground="{StaticResource AccentBrush}" />
+            </TextBlock>
+            <TextBlock Style="{StaticResource BodyText}" Margin="0,10,0,16"
                        Text="O motor usa só os bindings do perfil ativo. Ao trocar de perfil, as macros param e as teclas sintetizadas que estavam pressionadas são soltas." />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                 <TextBlock Text="Nome" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />

@@ -3,8 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="28,24">
         <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="Macros" Style="{StaticResource TitleText}" />
-            <TextBlock x:Name="IntroText" Style="{StaticResource BodyText}" Margin="0,8,0,12" />
+            <TextBlock Text="SEQUÊNCIAS GRAVADAS" Style="{StaticResource EyebrowText}" />
+            <TextBlock Style="{StaticResource TitleText}">
+                <Run Text="As suas " />
+                <Run Text="macros" Foreground="{StaticResource AccentBrush}" />
+            </TextBlock>
+            <TextBlock x:Name="IntroText" Style="{StaticResource BodyText}" Margin="0,10,0,16" />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                 <Button Content="Nova" Style="{StaticResource PrimaryButton}" Click="AddClicked" AutomationProperties.Name="Nova macro" />
                 <Button Content="Editar" Style="{StaticResource ActionButton}" Click="EditClicked" AutomationProperties.Name="Editar macro" />

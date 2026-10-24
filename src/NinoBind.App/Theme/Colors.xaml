@@ -1,21 +1,21 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="InkColor">#0F1318</Color>
-    <Color x:Key="NavColor">#151A20</Color>
-    <Color x:Key="CardColor">#1B222A</Color>
-    <Color x:Key="CardHoverColor">#232C36</Color>
-    <Color x:Key="FieldColor">#121820</Color>
-    <Color x:Key="LineColor">#2A3440</Color>
-    <Color x:Key="TextColor">#E6EBF0</Color>
-    <Color x:Key="MutedColor">#93A0B2</Color>
-    <Color x:Key="AccentColor">#FF7A1A</Color>
-    <Color x:Key="AccentLightColor">#FFB84A</Color>
-    <Color x:Key="AccentDeepColor">#E85A00</Color>
-    <Color x:Key="AccentInkColor">#1A0C04</Color>
-    <Color x:Key="SelectionColor">#3A2212</Color>
-    <Color x:Key="WarnColor">#E0A15A</Color>
-    <Color x:Key="FashionLineColor">#C86A22</Color>
-    <Color x:Key="FashionHoverColor">#2E1A10</Color>
+    <Color x:Key="InkColor">#050B19</Color>
+    <Color x:Key="NavColor">#060C1C</Color>
+    <Color x:Key="CardColor">#151B35</Color>
+    <Color x:Key="CardHoverColor">#1B2344</Color>
+    <Color x:Key="FieldColor">#0A1026</Color>
+    <Color x:Key="LineColor">#1E2748</Color>
+    <Color x:Key="TextColor">#F7F8FC</Color>
+    <Color x:Key="MutedColor">#8B93AB</Color>
+    <Color x:Key="AccentColor">#F0CC38</Color>
+    <Color x:Key="AccentLightColor">#F7D02D</Color>
+    <Color x:Key="AccentDeepColor">#D4B22A</Color>
+    <Color x:Key="AccentInkColor">#0A0C10</Color>
+    <Color x:Key="SelectionColor">#1A2248</Color>
+    <Color x:Key="WarnColor">#E8C36A</Color>
+    <Color x:Key="FashionLineColor">#E8C547</Color>
+    <Color x:Key="FashionHoverColor">#1A2248</Color>
 
     <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
     <SolidColorBrush x:Key="NavBrush" Color="{StaticResource NavColor}" />
@@ -35,26 +35,26 @@
     <SolidColorBrush x:Key="FashionHoverBrush" Color="{StaticResource FashionHoverColor}" />
 
     <LinearGradientBrush x:Key="FashionFillBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#FFC14D" Offset="0" />
-        <GradientStop Color="#FF8A1F" Offset="0.48" />
-        <GradientStop Color="#FF5E00" Offset="1" />
+        <GradientStop Color="#F7D02D" Offset="0" />
+        <GradientStop Color="#F0CC38" Offset="0.55" />
+        <GradientStop Color="#E8C040" Offset="1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="FashionFillHoverBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#FFD06A" Offset="0" />
-        <GradientStop Color="#FF9A33" Offset="0.48" />
-        <GradientStop Color="#FF7010" Offset="1" />
+        <GradientStop Color="#FBE25A" Offset="0" />
+        <GradientStop Color="#F4D33A" Offset="0.55" />
+        <GradientStop Color="#ECCA4F" Offset="1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="FashionFillPressedBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#E8A030" Offset="0" />
-        <GradientStop Color="#E86A10" Offset="0.5" />
-        <GradientStop Color="#D24E00" Offset="1" />
+        <GradientStop Color="#E8C040" Offset="0" />
+        <GradientStop Color="#D4B22A" Offset="0.55" />
+        <GradientStop Color="#C4A220" Offset="1" />
     </LinearGradientBrush>
 
     <Style x:Key="FocusRing">
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Border Margin="-2" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1.5" CornerRadius="9" />
+                    <Border Margin="-2" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1" CornerRadius="12" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -69,19 +69,22 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
     </Style>
 
-    <Style TargetType="TextBlock">
+    <Style x:Key="TitleText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="Light" />
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
     </Style>
 
-    <Style x:Key="TitleText" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="26" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Style x:Key="EyebrowText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
 
     <Style x:Key="SectionText" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
         <Setter Property="Margin" Value="0,0,0,8" />
     </Style>
@@ -96,8 +99,17 @@
         <Setter Property="Background" Value="{StaticResource CardBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="10" />
-        <Setter Property="Padding" Value="16" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+    </Style>
+
+    <Style x:Key="NavIcon" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Center" />
     </Style>
 
     <!-- Navegação -->
@@ -121,7 +133,7 @@
                                 TextElement.Foreground="{TemplateBinding Foreground}">
                             <ContentPresenter VerticalAlignment="Center" />
                         </Border>
-                        <Border x:Name="Marker" Width="3" CornerRadius="2" Margin="0,8" HorizontalAlignment="Left"
+                        <Border x:Name="Marker" Width="2" CornerRadius="1" Margin="0,10" HorizontalAlignment="Left"
                                 Background="{StaticResource AccentBrush}" Visibility="Collapsed" />
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -130,7 +142,7 @@
                             <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Row" Property="Background" Value="{StaticResource SelectionBrush}" />
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource CardBrush}" />
                             <Setter TargetName="Marker" Property="Visibility" Value="Visible" />
                             <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
                         </Trigger>
@@ -160,9 +172,12 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8"
+                            CornerRadius="12"
                             Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -196,12 +211,16 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8"
+                            CornerRadius="12"
                             Padding="{TemplateBinding Padding}">
                         <Border.Effect>
-                            <DropShadowEffect Color="#FF7A1A" BlurRadius="14" ShadowDepth="0" Opacity="0.32" />
+                            <DropShadowEffect Color="#F0CC38" BlurRadius="16" ShadowDepth="0" Opacity="0.22" />
                         </Border.Effect>
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Foreground="#0A0C10"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -235,7 +254,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
                     <Border x:Name="Frame" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
                         <Grid>
                             <TextBlock x:Name="Hint" Text="{TemplateBinding Tag}" Foreground="{StaticResource MutedBrush}" Opacity="0.7"
                                        Margin="{TemplateBinding Padding}" Padding="2,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed" />
@@ -304,7 +323,7 @@
 
     <!-- ComboBox -->
     <ControlTemplate x:Key="ComboToggle" TargetType="ToggleButton">
-        <Border x:Name="Frame" Background="{StaticResource FieldBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="6">
+        <Border x:Name="Frame" Background="{StaticResource FieldBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="10">
             <Path HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" Data="M 0,0 L 5,5 L 10,0"
                   Stroke="{StaticResource MutedBrush}" StrokeThickness="1.6" />
         </Border>
@@ -391,16 +410,19 @@
 
     <Style TargetType="ListBoxItem">
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="Padding" Value="10,7" />
-        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="Padding" Value="14,12" />
+        <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
                     <Border x:Name="Row" Background="{StaticResource CardBrush}" BorderBrush="Transparent" BorderThickness="1"
-                            CornerRadius="6" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                            CornerRadius="14" Padding="{TemplateBinding Padding}">
+                        <Grid>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="0,0,16,0" />
+                            <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.9" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -426,7 +448,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ListView">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10" Padding="4">
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="16" Padding="6">
                         <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}" Focusable="False">
                             <ItemsPresenter />
                         </ScrollViewer>

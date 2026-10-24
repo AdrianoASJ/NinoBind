@@ -3,8 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel Margin="28,24">
         <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="Bindings" Style="{StaticResource TitleText}" />
-            <TextBlock Style="{StaticResource BodyText}" Margin="0,8,0,12" TextWrapping="Wrap"
+            <TextBlock Text="O QUE O MOTOR APLICA" Style="{StaticResource EyebrowText}" />
+            <TextBlock Style="{StaticResource TitleText}">
+                <Run Text="Os seus " />
+                <Run Text="bindings" Foreground="{StaticResource AccentBrush}" />
+            </TextBlock>
+            <TextBlock Style="{StaticResource BodyText}" Margin="0,10,0,16" TextWrapping="Wrap"
                        Text="O motor aplica apenas bindings do perfil ativo marcados como Qualquer dispositivo. Um binding preso a um aparelho fica salvo, mas o hook do Windows não consegue limitá-lo a esse hardware." />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                 <Button x:Name="AddButton" Content="Adicionar" Style="{StaticResource PrimaryButton}" Click="AddClicked" AutomationProperties.Name="Adicionar binding" />
