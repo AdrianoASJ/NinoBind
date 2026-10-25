@@ -21,6 +21,8 @@
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>  </PropertyGroup>
   <ItemGroup>
     <Resource Include="Assets\ninobind.ico" />
+    <Resource Include="Assets\ninobind-icon.png" />
+    <Resource Include="Assets\ninobind-mark.png" />
   </ItemGroup>
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />

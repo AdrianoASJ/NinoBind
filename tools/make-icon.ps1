@@ -1,42 +1,51 @@
 param(
+    [string]$Source = (Join-Path $PSScriptRoot '..\src\NinoBind.App\Assets\ninobind-icon.png'),
     [string]$Output = (Join-Path $PSScriptRoot '..\src\NinoBind.App\Assets\ninobind.ico')
 )
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
-function New-RoundedPath([single]$x, [single]$y, [single]$w, [single]$h, [single]$r) {
-    $path = New-Object System.Drawing.Drawing2D.GraphicsPath
-    $d = $r * 2
-    $path.AddArc($x, $y, $d, $d, 180, 90)
-    $path.AddArc($x + $w - $d, $y, $d, $d, 270, 90)
-    $path.AddArc($x + $w - $d, $y + $h - $d, $d, $d, 0, 90)
-    $path.AddArc($x, $y + $h - $d, $d, $d, 90, 90)
-    $path.CloseFigure()
-    return $path
+if (-not (Test-Path -LiteralPath $Source)) {
+    throw "PNG da logo não encontrado: $Source"
 }
 
-function New-IconFrame([int]$size) {
-    $scale = $size / 32.0
+function Get-Zoom([int]$size) {
+    if ($size -le 16) { return 0.36 }
+    if ($size -le 20) { return 0.38 }
+    if ($size -le 24) { return 0.40 }
+    if ($size -le 32) { return 0.46 }
+    if ($size -le 40) { return 0.58 }
+    if ($size -le 48) { return 0.70 }
+    return 1.0
+}
+
+function New-IconFrame([System.Drawing.Image]$source, [int]$size) {
+    $zoom = Get-Zoom $size
+    $crop = [Math]::Max(8, [int]($source.Width * $zoom))
+    $x = [int](($source.Width - $crop) / 2)
+    $y = [int](($source.Height - $crop) / 2)
     $bitmap = New-Object System.Drawing.Bitmap $size, $size
     $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-    $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $graphics.Clear([System.Drawing.Color]::Transparent)
-    $accent = [System.Drawing.Color]::FromArgb(0xF0, 0xCC, 0x38)
-    $brush = New-Object System.Drawing.SolidBrush $accent
-    $pen = New-Object System.Drawing.Pen $accent, ([Math]::Max(1.5, 3 * $scale))
-    $filled = New-RoundedPath (2 * $scale) (2 * $scale) (18 * $scale) (18 * $scale) (4 * $scale)
-    $outline = New-RoundedPath (12 * $scale) (12 * $scale) (17 * $scale) (17 * $scale) (4 * $scale)
-    $graphics.FillPath($brush, $filled)
-    $graphics.DrawPath($pen, $outline)
+    $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+    $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+    $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+    $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+    $dest = New-Object System.Drawing.Rectangle 0, 0, $size, $size
+    $src = New-Object System.Drawing.Rectangle $x, $y, $crop, $crop
+    $graphics.DrawImage($source, $dest, $src, [System.Drawing.GraphicsUnit]::Pixel)
     $stream = New-Object System.IO.MemoryStream
     $bitmap.Save($stream, [System.Drawing.Imaging.ImageFormat]::Png)
-    $filled.Dispose(); $outline.Dispose(); $pen.Dispose(); $brush.Dispose(); $graphics.Dispose(); $bitmap.Dispose()
+    $graphics.Dispose()
+    $bitmap.Dispose()
     return , $stream.ToArray()
 }
 
-$sizes = 16, 24, 32, 48, 64, 256
-$frames = foreach ($size in $sizes) { , (New-IconFrame $size) }
+$sourceImage = [System.Drawing.Image]::FromFile((Resolve-Path -LiteralPath $Source))
+$sizes = 16, 20, 24, 32, 40, 48, 64, 256
+$frames = foreach ($size in $sizes) { , (New-IconFrame $sourceImage $size) }
+$sourceImage.Dispose()
 
 $directory = Split-Path -Parent $Output
 New-Item -ItemType Directory -Force -Path $directory | Out-Null

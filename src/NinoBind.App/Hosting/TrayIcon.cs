@@ -13,7 +13,7 @@ public sealed class TrayIcon : IDisposable
     public TrayIcon(Action open, Action toggleEngine, Action stopMacros, Action exit)
     {
         using (var stream = System.Windows.Application.GetResourceStream(IconUri).Stream)
-            _image = new Icon(stream, SystemInformation.SmallIconSize);
+            _image = new Icon(stream, 32, 32);
         _engineItem = new ToolStripMenuItem("Ativar motor", null, (_, _) => toggleEngine());
         var menu = new ContextMenuStrip();
         menu.Items.Add(new ToolStripMenuItem("Abrir NinoBind", null, (_, _) => open()) { Font = new Font(menu.Font, System.Drawing.FontStyle.Bold) });
