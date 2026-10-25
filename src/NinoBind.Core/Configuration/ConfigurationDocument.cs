@@ -12,6 +12,8 @@ public sealed class ProfileDocument
     public string Name { get; set; } = "";
 
     public bool IsEnabled { get; set; } = true;
+
+    public override string ToString() => Name;
 }
 
 public sealed class BindingDocument
@@ -69,6 +71,8 @@ public sealed class MacroDocument
     public int RepeatCount { get; set; } = 1;
 
     public List<MacroStepDocument> Steps { get; set; } = [];
+
+    public override string ToString() => Name;
 }
 
 public sealed class SettingsDocument
@@ -78,6 +82,8 @@ public sealed class SettingsDocument
     public bool CloseToTray { get; set; }
 
     public bool StartEngineOnLaunch { get; set; }
+
+    public Dictionary<string, string> DeviceNicknames { get; set; } = [];
 }
 
 public sealed class ConfigurationDocument

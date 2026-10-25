@@ -12,6 +12,7 @@ public partial class BindingEditorWindow : Window
     private readonly nint _ownerWindow;
     private readonly List<InputDevice> _devices;
     private bool _capturingOutput;
+    private bool _capturing;
     private string _inputKind = BindingKinds.Key;
     private int _inputCode;
     private int _outputCode;
@@ -29,9 +30,11 @@ public partial class BindingEditorWindow : Window
         _ownerWindow = ownerWindow;
         _devices = devices.ToList();
         InitializeComponent();
+        OverlayWindow.Attach(this);
+        TitleText.Text = existing is null ? "Novo binding" : "Editar binding";
         DeviceBox.Items.Add("Qualquer dispositivo");
         foreach (var device in _devices)
-            DeviceBox.Items.Add(device.DisplayName);
+            DeviceBox.Items.Add(DeviceLabels.Friendly(device, _devices, document.Settings.DeviceNicknames));
         DeviceBox.SelectedIndex = 0;
         foreach (var profile in document.Profiles)
             ProfileBox.Items.Add(profile);
@@ -50,7 +53,7 @@ public partial class BindingEditorWindow : Window
             MouseBox.Items.Add(InputNames.MouseButton(button));
         MouseBox.SelectedIndex = 0;
         foreach (var macro in document.Macros)
-            MacroBox.Items.Add(macro);
+            MacroBox.Items.Add(new MacroOption(macro));
         if (existing is not null)
             Load(existing);
         else
@@ -67,7 +70,7 @@ public partial class BindingEditorWindow : Window
         _inputKind = binding.InputKind;
         _inputCode = binding.InputCode;
         _outputCode = binding.OutputCode;
-        TriggerText.Text = DescribeInput();
+        ShowTrigger();
         OutputText.Text = _outputCode == 0 ? "Não escolhida" : InputNames.Key((ushort)_outputCode);
         if (!string.IsNullOrEmpty(binding.DeviceId))
         {
@@ -92,7 +95,7 @@ public partial class BindingEditorWindow : Window
         if (binding.ActionKind == BindingKinds.Mouse && binding.OutputCode is >= 1 and <= 5)
             MouseBox.SelectedIndex = binding.OutputCode - 1;
         TextBox.Text = binding.Text ?? "";
-        MacroBox.SelectedItem = MacroBox.Items.OfType<MacroDocument>().FirstOrDefault(macro => macro.Id == binding.MacroId);
+        MacroBox.SelectedItem = MacroBox.Items.OfType<MacroOption>().FirstOrDefault(item => item.Macro.Id == binding.MacroId);
         Tag = binding.Id;
     }
 
@@ -103,43 +106,90 @@ public partial class BindingEditorWindow : Window
     private void Arm(bool output)
     {
         _capturingOutput = output;
-        HintText.Text = output ? "Pressione a tecla de saída." : "Pressione a tecla ou o botão de entrada.";
+        _capturing = true;
+        HintText.Text = output ? "Pressione a tecla de saída. Esc cancela a captura." : "Esc cancela a captura.";
+        if (!output)
+        {
+            TriggerText.Text = "Pressione uma tecla ou botão…";
+            TriggerText.Foreground = (System.Windows.Media.Brush)FindResource("GoldBrush");
+            CurrentText.Text = _inputCode == 0 ? "" : "atual: " + DescribeInput();
+            CaptureField.BorderBrush = (System.Windows.Media.Brush)FindResource("GoldBrush");
+        }
         _session.Captured -= OnCaptured;
         _session.Captured += OnCaptured;
         if (!_session.BeginCapture(_ownerWindow))
+        {
+            _capturing = false;
             HintText.Text = _session.ObservationError ?? "A captura não foi armada.";
+        }
+    }
+
+    private void StopCapture()
+    {
+        _capturing = false;
+        _session.Captured -= OnCaptured;
+        _session.EndCapture();
+        CaptureField.BorderBrush = (System.Windows.Media.Brush)FindResource("FieldLineBrush");
+        ShowTrigger();
+    }
+
+    private void ShowTrigger()
+    {
+        if (_inputCode == 0)
+        {
+            TriggerText.Text = "Pressione uma tecla ou botão…";
+            TriggerText.Foreground = (System.Windows.Media.Brush)FindResource("TextDimBrush");
+            CurrentText.Text = "";
+            return;
+        }
+
+        TriggerText.Text = DescribeInput();
+        TriggerText.Foreground = (System.Windows.Media.Brush)FindResource("TextBrush");
+        CurrentText.Text = "";
+    }
+
+    private void WindowKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key != System.Windows.Input.Key.Escape || !_capturing)
+            return;
+        StopCapture();
+        HintText.Text = "Captura cancelada.";
+        e.Handled = true;
     }
 
     private void OnCaptured(PhysicalEdge edge)
     {
         Dispatcher.Invoke(() =>
         {
-            _session.Captured -= OnCaptured;
-            if (_capturingOutput)
+            var wasOutput = _capturingOutput;
+            if (wasOutput)
             {
                 if (!edge.IsKeyboard)
                 {
+                    StopCapture();
                     HintText.Text = "A saída de tecla aceita apenas teclado.";
                     return;
                 }
 
                 _outputCode = edge.Code;
                 OutputText.Text = InputNames.Key((ushort)edge.Code);
+                StopCapture();
             }
             else
             {
                 _inputKind = edge.IsKeyboard ? BindingKinds.Key : BindingKinds.Mouse;
                 _inputCode = edge.Code;
-                TriggerText.Text = DescribeInput();
                 if (edge.IsKeyboard && BindingEngine.IsReservedKey(edge.Code))
                 {
                     _inputCode = 0;
-                    TriggerText.Text = "";
+                    StopCapture();
                     HintText.Text = edge.Code == BindingEngine.ReservedScrollLockKey
                         ? "Scroll Lock fica reservada para ligar e desligar o motor."
                         : "Pause fica reservada para o Emergency Stop.";
                     return;
                 }
+
+                StopCapture();
                 if (!edge.IsKeyboard && edge.Code == 1)
                 {
                     HintText.Text = "Atenção: com o motor ligado, o botão esquerdo deixa de clicar normalmente em todos os aplicativos. Prefira um botão lateral (Botão 4 ou 5).";
@@ -213,7 +263,7 @@ public partial class BindingEditorWindow : Window
                 binding.Text = TextBox.Text;
                 break;
             case BindingKinds.Macro:
-                binding.MacroId = (MacroBox.SelectedItem as MacroDocument)?.Id ?? "";
+                binding.MacroId = (MacroBox.SelectedItem as MacroOption)?.Macro.Id ?? "";
                 break;
         }
 
@@ -253,4 +303,12 @@ public partial class BindingEditorWindow : Window
     private string DescribeInput() => _inputKind == BindingKinds.Mouse
         ? InputNames.MouseButton(_inputCode)
         : InputNames.Key((ushort)_inputCode);
+
+    private sealed class MacroOption(MacroDocument macro)
+    {
+        public MacroDocument Macro { get; } = macro;
+
+        public override string ToString() =>
+            $"{Macro.Name} · {Macro.Steps.Count} {(Macro.Steps.Count == 1 ? "passo" : "passos")}";
+    }
 }

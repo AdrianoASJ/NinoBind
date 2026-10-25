@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using NinoBind.Core.Configuration;
 using NinoBind.Core.Macros;
@@ -20,7 +21,8 @@ public partial class MacrosView : UserControl
         _controller = controller;
         _saved = saved;
         InitializeComponent();
-        IntroText.Text = $"Uma macro roda quando um binding de macro dispara ou pelo botão Testar. {EmergencyHotkey.Label} para todas as macros e solta as teclas que elas seguravam, mesmo com outra janela em foco.";
+        HelpButton.ToolTip =
+            $"Uma macro roda quando um binding de macro dispara ou pelo botão Testar. {EmergencyHotkey.Label} para todas as macros e solta as teclas que elas seguravam, mesmo com outra janela em foco.";
         Loaded += (_, _) => _controller.MacrosChanged += OnMacrosChanged;
         Unloaded += (_, _) => _controller.MacrosChanged -= OnMacrosChanged;
         Reload();
@@ -29,6 +31,7 @@ public partial class MacrosView : UserControl
     public void Reload()
     {
         var document = _host.Configuration.Document;
+        var search = SearchBox.Text.Trim();
         MacroList.Items.Clear();
         foreach (var macro in document.Macros)
         {
@@ -37,9 +40,17 @@ public partial class MacrosView : UserControl
                 : macro.RepeatCount == 1 ? "Uma vez" : $"{macro.RepeatCount} vezes";
             var delay = macro.Steps.Where(step => step.Kind == MacroKinds.Delay).Sum(step => (long)step.DelayMs);
             var uses = document.Bindings.Count(binding => binding.MacroId == macro.Id);
+            if (!string.IsNullOrEmpty(search) && !macro.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                continue;
             MacroList.Items.Add(new MacroRow(macro.Id, macro.Name, macro.Steps.Count, repeat, $"{delay} ms", uses));
         }
 
+        var empty = document.Macros.Count == 0;
+        EmptyPanel.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+        MacroList.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+        AddButton.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+        if (!empty)
+            MacroList.Height = 40 + MacroList.Items.Count * 56;
         ShowRunning(_controller.RunningMacros);
     }
 
@@ -51,9 +62,11 @@ public partial class MacrosView : UserControl
             Edit(macro);
     }
 
-    private void DuplicateClicked(object sender, RoutedEventArgs e)
+    private void EditRowClicked(object sender, RoutedEventArgs e) => Edit(FromSender(sender));
+
+    private void DuplicateRowClicked(object sender, RoutedEventArgs e)
     {
-        if (Selected() is not { } source)
+        if (FromSender(sender) is not { } source)
             return;
         Commit(new MacroDocument
         {
@@ -62,12 +75,12 @@ public partial class MacrosView : UserControl
             RepeatMode = source.RepeatMode,
             RepeatCount = source.RepeatCount,
             Steps = source.Steps.Select(MacroEditorWindow.Copy).ToList(),
-        });
+        }, created: true);
     }
 
-    private void DeleteClicked(object sender, RoutedEventArgs e)
+    private void DeleteRowClicked(object sender, RoutedEventArgs e)
     {
-        if (Selected() is not { } macro)
+        if (FromSender(sender) is not { } macro)
             return;
         var document = _host.Configuration.Document;
         var uses = document.Bindings.Count(binding => binding.MacroId == macro.Id);
@@ -92,10 +105,21 @@ public partial class MacrosView : UserControl
         Reload();
     }
 
-    private void TestClicked(object sender, RoutedEventArgs e)
+    private void TestRowClicked(object sender, RoutedEventArgs e)
     {
-        if (Selected() is not { } macro)
+        if (FromSender(sender) is not { } macro)
             return;
+        Test(macro);
+    }
+
+    private void FilterChanged(object sender, RoutedEventArgs e)
+    {
+        if (IsLoaded)
+            Reload();
+    }
+
+    private void Test(MacroDocument macro)
+    {
         if (macro.Steps.Count == 0)
         {
             StatusText.Text = "A macro está vazia.";
@@ -126,10 +150,10 @@ public partial class MacrosView : UserControl
     {
         var editor = new MacroEditorWindow(macro) { Owner = Window.GetWindow(this) };
         if (editor.ShowDialog() == true && editor.Result is not null)
-            Commit(editor.Result);
+            Commit(editor.Result, created: macro is null);
     }
 
-    private void Commit(MacroDocument macro)
+    private void Commit(MacroDocument macro, bool created)
     {
         var list = _host.Configuration.Document.Macros;
         var index = list.FindIndex(item => item.Id == macro.Id);
@@ -142,6 +166,7 @@ public partial class MacrosView : UserControl
         else
         {
             list.Add(macro);
+            created = true;
         }
 
         var error = ConfigurationValidator.Validate(_host.Configuration.Document);
@@ -156,6 +181,8 @@ public partial class MacrosView : UserControl
         }
 
         _controller.Use(_host.Configuration.Document);
+        if (created)
+            ActivityFeed.Current.Add("\uE768", $"Macro {macro.Name} criada com {macro.Steps.Count} passos");
         _saved();
         Reload();
     }
@@ -164,18 +191,36 @@ public partial class MacrosView : UserControl
 
     private void ShowRunning(int running)
     {
-        StatusText.Text = running switch
+        StopButton.IsEnabled = running > 0;
+        if (running > 0)
         {
-            0 => _host.Configuration.Document.Macros.Count == 0 ? "Nenhuma macro salva." : "Nenhuma macro em execução.",
-            1 => "1 macro em execução.",
-            _ => $"{running} macros em execução.",
-        };
+            RunBadge.Style = (Style)FindResource("BadgeSuccess");
+            RunBadgeText.Text = $"Rodando: {running}";
+            RunBadgeText.Foreground = (Brush)FindResource("SuccessBrush");
+            StatusText.Text = running == 1 ? "1 macro em execução." : $"{running} macros em execução.";
+            return;
+        }
+
+        RunBadge.Style = (Style)FindResource("BadgeNeutral");
+        RunBadgeText.Text = "Ocioso";
+        RunBadgeText.Foreground = (Brush)FindResource("NeutralBrush");
+        StatusText.Text = _host.Configuration.Document.Macros.Count == 0
+            ? "Nenhuma macro salva."
+            : "Nenhuma macro em execução.";
     }
 
     private MacroDocument? Selected() =>
         MacroList.SelectedItem is MacroRow row
             ? _host.Configuration.Document.Macros.FirstOrDefault(item => item.Id == row.Id)
             : null;
+
+    private MacroDocument? FromSender(object sender)
+    {
+        var id = sender is FrameworkElement element ? element.Tag as string : null;
+        return id is null
+            ? null
+            : _host.Configuration.Document.Macros.FirstOrDefault(item => item.Id == id);
+    }
 
     private sealed record MacroRow(string Id, string Name, int Steps, string Repeat, string Delay, int Uses);
 }

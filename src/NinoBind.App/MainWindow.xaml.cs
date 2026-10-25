@@ -28,13 +28,14 @@ public partial class MainWindow : Window
     private int _cooldownRemaining;
     private nint _windowHandle;
     private EngineState _engine = EngineState.NotStarted;
+    private string _section = "overview";
 
     public MainWindow(AppHost host)
     {
         _host = host;
         _bindings = new BindingController(_input, host.Configuration.Document);
         InitializeComponent();
-        _overview = new OverviewView(host);
+        _overview = new OverviewView(host, ToggleEngineFromHotkey, NavigateTo);
         _settings = new SettingsView(host, SettingsChanged);
         SectionHost.Content = _overview;
         _tray = new TrayIcon(ShowFromTray, ToggleEngineFromTray, () => EmergencyStop(), ExitApplication);
@@ -153,6 +154,7 @@ public partial class MainWindow : Window
             _host.Log.Error("emergency hotkey unavailable");
         if (!_engineHotkey.Register(_windowHandle))
             _host.Log.Error("engine hotkey unavailable");
+        ActivityFeed.Current.Add("\uE7F4", $"{_input.Devices.Count} dispositivos detectados");
         if (_host.Configuration.Document.Settings.StartEngineOnLaunch && !SetEngine(true))
             _host.Log.Error("engine did not start on launch");
         RefreshOverview();
@@ -191,11 +193,17 @@ public partial class MainWindow : Window
     private void RefreshOverview()
     {
         var detectionRan = _input.EnumerationError is null;
-        _overview.Apply(OverviewSnapshot.From(
-            _host.Configuration.Document,
-            _engine,
-            detectionRan,
-            detectionRan ? _input.Devices.Count : 0));
+        var mice = _input.Devices.Count(device => device.Kind == InputDeviceKind.Mouse);
+        var keys = _input.Devices.Count(device => device.Kind == InputDeviceKind.Keyboard);
+        _overview.Apply(
+            OverviewSnapshot.From(
+                _host.Configuration.Document,
+                _engine,
+                detectionRan,
+                detectionRan ? _input.Devices.Count : 0),
+            mice,
+            keys,
+            _bindings.RunningMacros);
     }
 
     private bool SetEngine(bool enabled)
@@ -209,6 +217,7 @@ public partial class MainWindow : Window
                 return false;
             _engine = EngineState.Running;
             _host.Log.Info("engine on");
+            ActivityFeed.Current.Add("\uE7E8", "Motor ativo");
         }
         else
         {
@@ -217,6 +226,7 @@ public partial class MainWindow : Window
                 return false;
             _engine = EngineState.Paused;
             _host.Log.Info("engine off");
+            ActivityFeed.Current.Add("\uE7E8", "Motor parado pelo atalho Scroll Lock");
         }
 
         StartEngineCooldown();
@@ -242,19 +252,21 @@ public partial class MainWindow : Window
             parts.Add($"{EmergencyHotkey.Label} indisponível");
         if (!_engineHotkey.IsRegistered && _windowHandle != 0)
             parts.Add($"{EngineHotkey.Label} indisponível");
-        StatusText.Text = string.Join(" · ", parts);
         var coolingDown = _engineCooldown.IsEnabled;
         EngineButton.IsEnabled = !coolingDown && _windowHandle != 0;
-        EngineButton.Content = coolingDown
+        EngineLabel.Text = coolingDown
             ? $"Aguarde {_cooldownRemaining} s"
-            : running ? "Desativar motor" : "Ativar motor";
-        EngineButton.Style = (Style)FindResource(running ? "ActionButton" : "PrimaryButton");
-        _tray.Update(StatusText.Text, running, !coolingDown);
-        StatusText.Foreground = macros > 0 || (!_emergency.IsRegistered || !_engineHotkey.IsRegistered) && _windowHandle != 0
-            ? (Brush)FindResource("WarnBrush")
-            : running || watching
-                ? (Brush)FindResource("AccentBrush")
-                : (Brush)FindResource("MutedBrush");
+            : running ? "Parar motor" : "Ativar motor";
+        EngineButton.Style = (Style)FindResource(running ? "DangerButton" : "PriButton");
+        StatusText.Text = running
+            ? "O motor está ativo e aplica os bindings."
+            : "O motor precisa estar ativo para os bindings funcionarem.";
+        MotorBadge.Style = (Style)FindResource(running ? "BadgeSuccess" : "BadgeDanger");
+        MotorDot.Visibility = running ? Visibility.Collapsed : Visibility.Visible;
+        MotorBadgeText.Text = running ? "Motor ativo" : "Motor parado";
+        MotorBadgeText.Foreground = (Brush)FindResource(running ? "SuccessBrush" : "DangerBrush");
+        _overview.SetEngine(_engine);
+        _tray.Update(string.Join(" · ", parts), running, !coolingDown);
     }
 
     private void SectionChanged(object sender, RoutedEventArgs e)
@@ -262,6 +274,17 @@ public partial class MainWindow : Window
         if (SectionHost is null || sender is not RadioButton button || button.Tag is not string section)
             return;
 
+        _section = section;
+        BreadcrumbText.Text = section switch
+        {
+            "overview" => "PAINEL",
+            "devices" => "TECLADOS E MOUSES",
+            "bindings" => "REMAPEAMENTO",
+            "macros" => "SEQUÊNCIAS GRAVADAS",
+            "profiles" => "CONJUNTOS DE BINDINGS",
+            "settings" => "PREFERÊNCIAS DO APLICATIVO",
+            _ => "PAINEL",
+        };
         SectionHost.Content = section switch
         {
             "overview" => _overview,
@@ -316,7 +339,22 @@ public partial class MainWindow : Window
         if (_windowHandle == 0)
             return new NoteView("Dispositivos", "A janela ainda não está pronta para consultar o Raw Input.");
 
-        return _devices ??= new DevicesView(_input, _windowHandle, _ => UpdateChrome());
+        return _devices ??= new DevicesView(_host, _input, _windowHandle, _ => UpdateChrome());
+    }
+
+    private void NavigateTo(string section)
+    {
+        var target = section switch
+        {
+            "overview" => OverviewNav,
+            "devices" => DevicesNav,
+            "bindings" => BindingsNav,
+            "macros" => MacrosNav,
+            "profiles" => ProfilesNav,
+            "settings" => SettingsNav,
+            _ => OverviewNav,
+        };
+        target.IsChecked = true;
     }
 
     private UIElement BindingsPage()

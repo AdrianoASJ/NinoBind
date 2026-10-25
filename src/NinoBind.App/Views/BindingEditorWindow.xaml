@@ -1,53 +1,122 @@
 <Window x:Class="NinoBind.Views.BindingEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Binding" Width="520" Height="560" ResizeMode="NoResize" Style="{StaticResource AppWindow}" WindowStartupLocation="CenterOwner">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="20">
-            <TextBlock Text="Dispositivo" Style="{StaticResource BodyText}" />
-            <ComboBox x:Name="DeviceBox" Margin="0,4,0,10" AutomationProperties.Name="Dispositivo" />
-            <TextBlock Text="Perfil" Style="{StaticResource BodyText}" />
-            <ComboBox x:Name="ProfileBox" Margin="0,4,0,10" DisplayMemberPath="Name" AutomationProperties.Name="Perfil" />
-            <TextBlock Text="Entrada" Style="{StaticResource BodyText}" />
-            <StackPanel Orientation="Horizontal" Margin="0,4,0,10">
-                <TextBlock x:Name="TriggerText" Style="{StaticResource BodyText}" Width="220" VerticalAlignment="Center" Text="Não escolhida" />
-                <Button Content="Capturar próxima" Style="{StaticResource ActionButton}" Click="CaptureTriggerClicked" AutomationProperties.Name="Capturar próxima entrada" />
-            </StackPanel>
-            <TextBlock Text="Ação" Style="{StaticResource BodyText}" />
-            <ComboBox x:Name="ActionBox" Margin="0,4,0,10" SelectionChanged="ActionChanged" AutomationProperties.Name="Tipo de ação" />
-            <StackPanel x:Name="KeyPanel">
-                <TextBlock Text="Tecla de saída" Style="{StaticResource BodyText}" />
-                <StackPanel Orientation="Horizontal" Margin="0,4,0,10">
-                    <TextBlock x:Name="OutputText" Style="{StaticResource BodyText}" Width="220" VerticalAlignment="Center" Text="Não escolhida" />
-                    <Button Content="Capturar tecla" Style="{StaticResource ActionButton}" Click="CaptureOutputClicked" AutomationProperties.Name="Capturar tecla de saída" />
-                </StackPanel>
-            </StackPanel>
-            <StackPanel x:Name="ChordPanel" Visibility="Collapsed">
-                <TextBlock Text="Atalho" Style="{StaticResource BodyText}" />
-                <WrapPanel Margin="0,4,0,10">
-                    <CheckBox x:Name="CtrlBox" Content="Ctrl" Margin="0,0,12,8" />
-                    <CheckBox x:Name="ShiftBox" Content="Shift" Margin="0,0,12,8" />
-                    <CheckBox x:Name="AltBox" Content="Alt" Margin="0,0,12,8" />
-                    <CheckBox x:Name="WinBox" Content="Win" Margin="0,0,12,8" />
-                </WrapPanel>
-            </StackPanel>
-            <StackPanel x:Name="MousePanel" Visibility="Collapsed">
-                <TextBlock Text="Botão de saída" Style="{StaticResource BodyText}" />
-                <ComboBox x:Name="MouseBox" Margin="0,4,0,10" AutomationProperties.Name="Botão de saída" />
-            </StackPanel>
-            <StackPanel x:Name="TextPanel" Visibility="Collapsed">
-                <TextBlock Text="Texto" Style="{StaticResource BodyText}" />
-                <TextBox x:Name="TextBox" Margin="0,4,0,10" MaxLength="256" AutomationProperties.Name="Texto do binding" />
-            </StackPanel>
-            <StackPanel x:Name="MacroPanel" Visibility="Collapsed">
-                <TextBlock Text="Macro" Style="{StaticResource BodyText}" />
-                <ComboBox x:Name="MacroBox" Margin="0,4,0,10" DisplayMemberPath="Name" AutomationProperties.Name="Macro" />
-            </StackPanel>
-            <TextBlock x:Name="HintText" Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancelar" Style="{StaticResource ActionButton}" Click="CancelClicked" IsCancel="True" />
-                <Button Content="Salvar" Style="{StaticResource PrimaryButton}" Click="SaveClicked" IsDefault="True" />
-            </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        Title="Binding"
+        Style="{StaticResource AppWindow}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="{StaticResource OverlayBrush}"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        PreviewKeyDown="WindowKeyDown">
+    <Grid>
+        <Border Style="{StaticResource ModalCard}" Width="520" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="22,18" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,0,0,1">
+                    <Grid>
+                        <TextBlock x:Name="TitleText" Style="{StaticResource ModalTitleText}" Text="Novo binding" />
+                        <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" Click="CancelClicked"
+                                ToolTip="Fechar" AutomationProperties.Name="Fechar">
+                            <TextBlock Text="&#xE8BB;" />
+                        </Button>
+                    </Grid>
+                </Border>
+                <Border DockPanel.Dock="Bottom" Padding="22,16" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,1,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
+                                Click="CancelClicked" IsCancel="True" />
+                        <Button Content="Salvar" Style="{StaticResource PriButton}" Click="SaveClicked" IsDefault="True" />
+                    </StackPanel>
+                </Border>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="22,18">
+                    <StackPanel>
+                        <TextBlock Text="Dispositivo" Style="{StaticResource LabelText}" />
+                        <ComboBox x:Name="DeviceBox" AutomationProperties.Name="Dispositivo" />
+
+                        <TextBlock Text="Entrada" Style="{StaticResource LabelText}" Margin="0,16,0,6" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="CaptureField" Background="{StaticResource PainelBrush}"
+                                    BorderBrush="{StaticResource FieldLineBrush}" BorderThickness="1"
+                                    CornerRadius="8" MinHeight="36" Padding="12,0">
+                                <Grid>
+                                    <TextBlock x:Name="TriggerText" Text="Pressione uma tecla ou botão…"
+                                               Foreground="{StaticResource TextDimBrush}" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="CurrentText" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextMutedBrush}" FontSize="12" />
+                                </Grid>
+                            </Border>
+                            <Button Grid.Column="2" Content="Capturar" Style="{StaticResource OutButton}"
+                                    Click="CaptureTriggerClicked" AutomationProperties.Name="Capturar próxima entrada" />
+                        </Grid>
+                        <TextBlock x:Name="HintText" Style="{StaticResource MetaText}" Margin="0,6,0,0"
+                                   Text="Esc cancela a captura." />
+
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Perfil" Style="{StaticResource LabelText}" />
+                                <ComboBox x:Name="ProfileBox" DisplayMemberPath="Name"
+                                          AutomationProperties.Name="Perfil" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Ação" Style="{StaticResource LabelText}" />
+                                <ComboBox x:Name="ActionBox" SelectionChanged="ActionChanged" AutomationProperties.Name="Tipo de ação" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel x:Name="KeyPanel" Margin="0,16,0,0">
+                            <TextBlock Text="Tecla de saída" Style="{StaticResource LabelText}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Background="{StaticResource PainelBrush}" BorderBrush="{StaticResource FieldLineBrush}"
+                                        BorderThickness="1" CornerRadius="8" MinHeight="36" Padding="12,0">
+                                    <TextBlock x:Name="OutputText" Text="Não escolhida" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextMutedBrush}" />
+                                </Border>
+                                <Button Grid.Column="2" Content="Capturar" Style="{StaticResource GhostButton}"
+                                        Click="CaptureOutputClicked" AutomationProperties.Name="Capturar tecla de saída" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel x:Name="ChordPanel" Visibility="Collapsed" Margin="0,16,0,0">
+                            <TextBlock Text="Atalho" Style="{StaticResource LabelText}" />
+                            <WrapPanel>
+                                <CheckBox x:Name="CtrlBox" Content="Ctrl" Margin="0,0,12,8" />
+                                <CheckBox x:Name="ShiftBox" Content="Shift" Margin="0,0,12,8" />
+                                <CheckBox x:Name="AltBox" Content="Alt" Margin="0,0,12,8" />
+                                <CheckBox x:Name="WinBox" Content="Win" Margin="0,0,12,8" />
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel x:Name="MousePanel" Visibility="Collapsed" Margin="0,16,0,0">
+                            <TextBlock Text="Botão de saída" Style="{StaticResource LabelText}" />
+                            <ComboBox x:Name="MouseBox" AutomationProperties.Name="Botão de saída" />
+                        </StackPanel>
+                        <StackPanel x:Name="TextPanel" Visibility="Collapsed" Margin="0,16,0,0">
+                            <TextBlock Text="Texto" Style="{StaticResource LabelText}" />
+                            <TextBox x:Name="TextBox" MaxLength="256" AutomationProperties.Name="Texto do binding" />
+                        </StackPanel>
+                        <StackPanel x:Name="MacroPanel" Visibility="Collapsed" Margin="0,16,0,0">
+                            <TextBlock Text="Macro" Style="{StaticResource LabelText}" />
+                            <ComboBox x:Name="MacroBox" AutomationProperties.Name="Macro" />
+                            <TextBlock Style="{StaticResource MetaText}" Margin="0,6,0,0"
+                                       Text="Aparece apenas quando a ação é Macro." />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
 </Window>

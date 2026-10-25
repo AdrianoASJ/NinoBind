@@ -1,64 +1,182 @@
 <Window x:Class="NinoBind.Views.MacroEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Macro" Width="720" Height="640" MinWidth="640" MinHeight="560" Style="{StaticResource AppWindow}" WindowStartupLocation="CenterOwner"
+        Title="Macro"
+        Style="{StaticResource AppWindow}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="{StaticResource OverlayBrush}"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
         PreviewKeyDown="WindowKeyDown" PreviewKeyUp="WindowKeyUp">
-    <DockPanel Margin="20">
-        <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="Nome" Style="{StaticResource BodyText}" />
-            <TextBox x:Name="NameBox" Margin="0,4,0,10" MaxLength="80" AutomationProperties.Name="Nome da macro" />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <ComboBox x:Name="RepeatBox" Width="240" Margin="0,0,8,0" SelectionChanged="RepeatChanged" AutomationProperties.Name="Modo de repetição" />
-                <TextBlock Text="Vezes" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                <TextBox x:Name="CountBox" Width="60" Text="1" AutomationProperties.Name="Quantidade de repetições" />
-            </StackPanel>
-            <Border x:Name="RecordBanner" Background="#3A1F1F" BorderBrush="#E05A5A" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10" Visibility="Collapsed">
-                <StackPanel>
-                    <TextBlock Text="● Gravando" Foreground="#FF8A8A" FontWeight="SemiBold" />
-                    <TextBlock Style="{StaticResource BodyText}" Text="Só as teclas digitadas com esta janela em foco e os cliques na área abaixo entram na macro." />
-                    <Border x:Name="MousePad" Height="56" Margin="0,8,0,0" Background="#2A1A1A" CornerRadius="6"
-                            PreviewMouseDown="PadMouseDown" PreviewMouseUp="PadMouseUp">
-                        <TextBlock Text="Área de cliques" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#C88" />
-                    </Border>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-        <StackPanel DockPanel.Dock="Bottom">
-            <TextBlock x:Name="HintText" Style="{StaticResource BodyText}" Margin="0,8,0,8" />
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancelar" Style="{StaticResource ActionButton}" Click="CancelClicked" IsCancel="True" />
-                <Button Content="Salvar" Style="{StaticResource PrimaryButton}" Click="SaveClicked" />
-            </StackPanel>
-        </StackPanel>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="260" />
-            </Grid.ColumnDefinitions>
+    <Grid>
+        <Border Style="{StaticResource ModalCard}" Width="860" MaxHeight="680"
+                VerticalAlignment="Center" HorizontalAlignment="Center">
             <DockPanel>
-                <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                    <Button x:Name="UpButton" Content="Subir" Style="{StaticResource ActionButton}" Margin="0,0,6,6" Click="UpClicked" AutomationProperties.Name="Subir passo" />
-                    <Button x:Name="DownButton" Content="Descer" Style="{StaticResource ActionButton}" Margin="0,0,6,6" Click="DownClicked" AutomationProperties.Name="Descer passo" />
-                    <Button x:Name="DuplicateButton" Content="Duplicar" Style="{StaticResource ActionButton}" Margin="0,0,6,6" Click="DuplicateStepClicked" AutomationProperties.Name="Duplicar passo" />
-                    <Button x:Name="RemoveButton" Content="Excluir passo" Style="{StaticResource ActionButton}" Margin="0,0,6,6" Click="RemoveClicked" ToolTip="Delete" AutomationProperties.Name="Excluir passo selecionado" />
-                </WrapPanel>
-                <ListBox x:Name="StepList" SelectionChanged="StepSelected" KeyDown="StepListKeyDown" AutomationProperties.Name="Passos da macro" />
+                <Border DockPanel.Dock="Top" Padding="22,18" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,0,0,1">
+                    <Grid>
+                        <TextBlock Style="{StaticResource ModalTitleText}" Text="Editar macro" />
+                        <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" Click="CancelClicked"
+                                ToolTip="Fechar" AutomationProperties.Name="Fechar">
+                            <TextBlock Text="&#xE8BB;" />
+                        </Button>
+                    </Grid>
+                </Border>
+                <Border DockPanel.Dock="Bottom" Padding="22,16" BorderBrush="{StaticResource DividerBrush}" BorderThickness="0,1,0,0">
+                    <Grid>
+                        <TextBlock x:Name="HintText" Style="{StaticResource MetaText}" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
+                                    Click="CancelClicked" IsCancel="True" />
+                            <Button Content="Salvar" Style="{StaticResource PriButton}" Click="SaveClicked" IsDefault="True" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="22,18">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="220" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Nome" Style="{StaticResource LabelText}" />
+                                <TextBox x:Name="NameBox" MaxLength="80" AutomationProperties.Name="Nome da macro" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Repetição" Style="{StaticResource LabelText}" />
+                                <ComboBox x:Name="RepeatBox" SelectionChanged="RepeatChanged" AutomationProperties.Name="Modo de repetição" />
+                            </StackPanel>
+                            <StackPanel x:Name="CountPanel" Grid.Column="4">
+                                <TextBlock Text="Vezes" Style="{StaticResource LabelText}" />
+                                <TextBox x:Name="CountBox" Width="72" Text="1" AutomationProperties.Name="Quantidade de repetições" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border x:Name="RecordBanner" Background="{StaticResource DangerFillBrush}"
+                                BorderBrush="{StaticResource DangerLineBrush}" BorderThickness="1"
+                                CornerRadius="8" Padding="10" Margin="0,16,0,0" Visibility="Collapsed">
+                            <StackPanel>
+                                <TextBlock Text="Gravando" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}" />
+                                <TextBlock Style="{StaticResource MetaText}"
+                                           Text="Só as teclas digitadas com esta janela em foco e os cliques na área abaixo entram na macro." />
+                                <Border x:Name="MousePad" Height="56" Margin="0,8,0,0"
+                                        Background="{StaticResource ReadonlyBrush}" CornerRadius="6"
+                                        PreviewMouseDown="PadMouseDown" PreviewMouseUp="PadMouseUp">
+                                    <TextBlock Text="Área de cliques" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Foreground="{StaticResource DangerBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="320" />
+                            </Grid.ColumnDefinitions>
+                            <DockPanel>
+                                <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="PASSOS" Style="{StaticResource SectionText}" Margin="0" VerticalAlignment="Center" />
+                                        <Border Style="{StaticResource BadgeNeutral}" Margin="8,0,0,0">
+                                            <TextBlock x:Name="StepCountText" Text="0" FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource NeutralBrush}" />
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock x:Name="DelayTotalText" Style="{StaticResource MetaText}"
+                                               HorizontalAlignment="Right" Text="Atraso total 0 ms" />
+                                </Grid>
+                                <TextBlock DockPanel.Dock="Bottom" Style="{StaticResource MetaText}" Margin="0,8,0,0"
+                                           Text="Arraste pela alça para reordenar. O menu tem Duplicar, Mover e Excluir." />
+                                <ListBox x:Name="StepList" SelectionChanged="StepSelected" KeyDown="StepListKeyDown"
+                                         AllowDrop="True" PreviewMouseLeftButtonDown="StepMouseDown"
+                                         PreviewMouseMove="StepMouseMove" Drop="StepDrop"
+                                         AutomationProperties.Name="Passos da macro">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="48">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="28" />
+                                                    <ColumnDefinition Width="28" />
+                                                    <ColumnDefinition Width="28" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                           Foreground="{StaticResource TextDimBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" Text="{Binding Number}" Foreground="{StaticResource TextMutedBrush}"
+                                                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="2" Text="{Binding Glyph}" FontFamily="Segoe MDL2 Assets"
+                                                           Foreground="{StaticResource IconBlueBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="3" Text="{Binding Text}" VerticalAlignment="Center" />
+                                                <Button Grid.Column="4" Style="{StaticResource IconButton}" Content="&#xE712;"
+                                                        ToolTip="Mais ações" Click="StepMenuClicked"
+                                                        Tag="{Binding Index}" AutomationProperties.Name="Ações do passo" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </DockPanel>
+                            <Border Grid.Column="2" Style="{StaticResource CardBorder}" Padding="14">
+                                <StackPanel>
+                                    <TextBlock Text="ADICIONAR PASSO" Style="{StaticResource SectionText}" />
+                                    <TextBlock Text="GRAVAR" Style="{StaticResource SectionText}" Margin="0,8,0,8" />
+                                    <Button x:Name="RecordButton" Style="{StaticResource OutButton}" HorizontalAlignment="Stretch"
+                                            Click="RecordClicked" AutomationProperties.Name="Gravar ou parar gravação">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Ellipse Width="8" Height="8" Fill="{StaticResource DangerDotBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="RecordLabel" Text="Gravar sequência" />
+                                        </StackPanel>
+                                    </Button>
+                                    <TextBlock Text="TECLA OU CLIQUE" Style="{StaticResource SectionText}" Margin="0,16,0,8" />
+                                    <ComboBox x:Name="MouseBox" Margin="0,0,0,8" AutomationProperties.Name="Tecla ou botão" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="6" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="6" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button Content="Pressionar" Style="{StaticResource GhostButton}" Click="AddPressClicked" />
+                                        <Button Grid.Column="2" Content="Soltar" Style="{StaticResource GhostButton}" Click="AddReleaseClicked" />
+                                        <Button Grid.Column="4" Content="Clique" Style="{StaticResource GhostButton}" Click="AddClickClicked" />
+                                    </Grid>
+                                    <TextBlock Text="ESPERA" Style="{StaticResource SectionText}" Margin="0,16,0,8" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="8" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="8" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="DelayBox" Text="100" AutomationProperties.Name="Atraso em milissegundos" />
+                                        <TextBlock Grid.Column="2" Text="ms" Style="{StaticResource MetaText}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="4" Content="Adicionar" Style="{StaticResource GhostButton}" Click="AddDelayClicked" />
+                                    </Grid>
+                                    <TextBlock Text="TEXTO" Style="{StaticResource SectionText}" Margin="0,16,0,8" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="8" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="StepTextBox" Tag="Texto para digitar" MaxLength="256"
+                                                 AutomationProperties.Name="Texto do passo" />
+                                        <Button Grid.Column="2" Content="Adicionar" Style="{StaticResource GhostButton}" Click="AddTextClicked" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
             </DockPanel>
-            <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                <Button x:Name="RecordButton" Content="Gravar" Style="{StaticResource PrimaryButton}" Margin="0,0,0,6" Click="RecordClicked" AutomationProperties.Name="Gravar ou parar gravação" />
-                <Button Content="Adicionar tecla" Style="{StaticResource ActionButton}" Margin="0,0,0,6" Click="AddKeyClicked" />
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                    <ComboBox x:Name="MouseBox" Width="160" Margin="0,0,6,0" AutomationProperties.Name="Botão do clique" />
-                    <Button Content="Clique" Style="{StaticResource ActionButton}" Click="AddClickClicked" Margin="0" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                    <TextBox x:Name="DelayBox" Width="70" Text="100" Margin="0,0,6,0" AutomationProperties.Name="Atraso em milissegundos" />
-                    <Button Content="Atraso" Style="{StaticResource ActionButton}" Click="AddDelayClicked" Margin="0,0,6,0" />
-                    <Button Content="Alterar" Style="{StaticResource ActionButton}" Click="ChangeDelayClicked" Margin="0" />
-                </StackPanel>
-                <TextBox x:Name="StepTextBox" Tag="Texto para digitar" MaxLength="256" Margin="0,0,0,6" AutomationProperties.Name="Texto do passo" />
-                <Button Content="Adicionar texto" Style="{StaticResource ActionButton}" Margin="0,0,0,6" Click="AddTextClicked" />
-            </StackPanel>
-        </Grid>
-    </DockPanel>
+        </Border>
+    </Grid>
 </Window>

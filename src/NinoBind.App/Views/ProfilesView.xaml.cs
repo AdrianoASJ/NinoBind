@@ -40,6 +40,12 @@ public partial class ProfilesView : UserControl
         }
     }
 
+    private void ActivateRowClicked(object sender, RoutedEventArgs e)
+    {
+        SelectFromSender(sender);
+        ActivateClicked(sender, e);
+    }
+
     private void AddClicked(object sender, RoutedEventArgs e)
     {
         string? createdId = null;
@@ -53,6 +59,7 @@ public partial class ProfilesView : UserControl
 
     private void RenameClicked(object sender, RoutedEventArgs e)
     {
+        SelectFromSender(sender);
         if (SelectedId() is not { } id)
             return;
         Apply(document => ProfileService.Rename(document, id, NameBox.Text), "Perfil renomeado.", () => id);
@@ -60,6 +67,7 @@ public partial class ProfilesView : UserControl
 
     private void DuplicateClicked(object sender, RoutedEventArgs e)
     {
+        SelectFromSender(sender);
         if (SelectedId() is not { } id)
             return;
         var name = NameBox.Text.Trim().Length > 0 && ProfileService.ValidateName(_host.Configuration.Document, NameBox.Text) is null
@@ -76,6 +84,7 @@ public partial class ProfilesView : UserControl
 
     private void DeleteClicked(object sender, RoutedEventArgs e)
     {
+        SelectFromSender(sender);
         if (SelectedRow() is not { } row)
             return;
         var question = row.Bindings == 0
@@ -97,6 +106,7 @@ public partial class ProfilesView : UserControl
 
     private void ExportClicked(object sender, RoutedEventArgs e)
     {
+        SelectFromSender(sender);
         if (SelectedRow() is not { } row)
             return;
         var dialog = new SaveFileDialog
@@ -170,6 +180,19 @@ public partial class ProfilesView : UserControl
         StatusText.Text = success;
         _changed();
         Reload(select());
+    }
+
+    private void SelectFromSender(object sender)
+    {
+        if (sender is not FrameworkElement { Tag: string id })
+            return;
+        foreach (ProfileRow row in ProfileList.Items)
+        {
+            if (row.Id != id)
+                continue;
+            ProfileList.SelectedItem = row;
+            break;
+        }
     }
 
     private ProfileRow? SelectedRow() => ProfileList.SelectedItem as ProfileRow;

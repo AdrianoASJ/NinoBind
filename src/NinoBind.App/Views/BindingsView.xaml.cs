@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using NinoBind.Core.Bindings;
 using NinoBind.Core.Configuration;
@@ -32,7 +33,7 @@ public partial class BindingsView : UserControl
         DeviceFilter.Items.Add("Todos os dispositivos");
         DeviceFilter.Items.Add("Qualquer dispositivo");
         foreach (var device in _session.Devices)
-            DeviceFilter.Items.Add(device.DisplayName);
+            DeviceFilter.Items.Add(DeviceLabels.Friendly(device, _session.Devices, _host.Configuration.Document.Settings.DeviceNicknames));
         DeviceFilter.SelectedIndex = 0;
         Reload();
     }
@@ -48,11 +49,15 @@ public partial class BindingsView : UserControl
         foreach (var binding in document.Bindings)
         {
             var profile = document.Profiles.FirstOrDefault(item => item.Id == binding.ProfileId)?.Name ?? binding.ProfileId;
-            var device = string.IsNullOrEmpty(binding.DeviceId) ? "Qualquer dispositivo" : binding.DeviceLabel;
+            var device = string.IsNullOrEmpty(binding.DeviceId)
+                ? "Qualquer dispositivo"
+                : _session.Devices.FirstOrDefault(item => item.DevicePath == binding.DeviceId) is { } found
+                    ? DeviceLabels.Friendly(found, _session.Devices, document.Settings.DeviceNicknames)
+                    : binding.DeviceLabel;
             var input = binding.InputKind == BindingKinds.Mouse
                 ? InputNames.MouseButton(binding.InputCode)
                 : InputNames.Key((ushort)binding.InputCode);
-            var action = Describe(binding);
+            var action = DescribeFull(document, binding);
             if (!string.IsNullOrEmpty(search)
                 && !device.Contains(search, StringComparison.OrdinalIgnoreCase)
                 && !input.Contains(search, StringComparison.OrdinalIgnoreCase)
@@ -65,12 +70,26 @@ public partial class BindingsView : UserControl
                 continue;
             if (profileFilter is not null && profileFilter != "Todos os perfis" && profile != profileFilter)
                 continue;
-            BindingList.Items.Add(new BindingRow(binding.Id, device, input, action, profile, BindingEngine.Status(document, binding)));
+            BindingList.Items.Add(new BindingRow(
+                binding.Id,
+                device,
+                string.IsNullOrEmpty(binding.DeviceId) ? "\uE71B" : binding.InputKind == BindingKinds.Mouse ? "\uE962" : "\uE92E",
+                input,
+                binding.InputKind == BindingKinds.Mouse ? "\uE962" : "\uE92E",
+                action,
+                profile,
+                binding.IsEnabled));
         }
 
-        StatusText.Text = document.Bindings.Count == 0
-            ? "Nenhum binding salvo."
-            : $"{BindingList.Items.Count} de {document.Bindings.Count} bindings.";
+        var empty = document.Bindings.Count == 0;
+        EmptyPanel.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+        BindingList.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+        AddButton.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+        StatusText.Text = empty
+            ? ""
+            : $"{BindingList.Items.Count} de {document.Bindings.Count} {(document.Bindings.Count == 1 ? "binding" : "bindings")}";
+        if (!empty)
+            BindingList.Height = 40 + BindingList.Items.Count * 56;
     }
 
     private bool _refreshingFilter;
@@ -91,11 +110,18 @@ public partial class BindingsView : UserControl
 
     private void AddClicked(object sender, RoutedEventArgs e) => Edit(null);
 
-    private void EditClicked(object sender, RoutedEventArgs e) => Edit(Selected());
-
-    private void DuplicateClicked(object sender, RoutedEventArgs e)
+    private void RowDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        var source = Selected();
+        if (e.OriginalSource is DependencyObject source && FindAncestor<Button>(source) is not null)
+            return;
+        Edit(Selected());
+    }
+
+    private void EditRowClicked(object sender, RoutedEventArgs e) => Edit(FromSender(sender));
+
+    private void DuplicateRowClicked(object sender, RoutedEventArgs e)
+    {
+        var source = FromSender(sender);
         if (source is null)
             return;
         var copy = Clone(source);
@@ -103,9 +129,9 @@ public partial class BindingsView : UserControl
         Commit(copy);
     }
 
-    private void DeleteClicked(object sender, RoutedEventArgs e)
+    private void DeleteRowClicked(object sender, RoutedEventArgs e)
     {
-        var binding = Selected();
+        var binding = FromSender(sender);
         if (binding is null)
             return;
         if (MessageBox.Show("Excluir este binding?", "NinoBind", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
@@ -122,9 +148,9 @@ public partial class BindingsView : UserControl
         Reload();
     }
 
-    private void ToggleClicked(object sender, RoutedEventArgs e)
+    private void StatusToggled(object sender, RoutedEventArgs e)
     {
-        var binding = Selected();
+        var binding = FromSender(sender);
         if (binding is null)
             return;
         binding.IsEnabled = !binding.IsEnabled;
@@ -132,6 +158,7 @@ public partial class BindingsView : UserControl
         {
             binding.IsEnabled = !binding.IsEnabled;
             StatusText.Text = error ?? "A alteração não foi salva.";
+            Reload();
             return;
         }
         _controller.Use(_host.Configuration.Document);
@@ -139,9 +166,9 @@ public partial class BindingsView : UserControl
         Reload();
     }
 
-    private void TestClicked(object sender, RoutedEventArgs e)
+    private void TestRowClicked(object sender, RoutedEventArgs e)
     {
-        var binding = Selected();
+        var binding = FromSender(sender);
         if (binding is null)
             return;
         StatusText.Text = "A ação sai em 2 segundos. Clique na janela que deve recebê-la.";
@@ -162,7 +189,10 @@ public partial class BindingsView : UserControl
 
     private void Edit(BindingDocument? binding)
     {
-        var editor = new BindingEditorWindow(_host.Configuration.Document, _session, _window, _session.Devices, binding) { Owner = Window.GetWindow(this) };
+        var editor = new BindingEditorWindow(_host.Configuration.Document, _session, _window, _session.Devices, binding)
+        {
+            Owner = Window.GetWindow(this),
+        };
         if (editor.ShowDialog() == true && editor.Result is not null)
             Commit(editor.Result);
     }
@@ -194,6 +224,8 @@ public partial class BindingsView : UserControl
             return;
         }
         _controller.Use(_host.Configuration.Document);
+        var profile = _host.Configuration.Document.Profiles.FirstOrDefault(item => item.Id == binding.ProfileId)?.Name ?? binding.ProfileId;
+        ActivityFeed.Current.Add("\uE70F", $"Binding {binding.Input} salvo no perfil {profile}");
         _saved();
         Reload();
     }
@@ -204,6 +236,26 @@ public partial class BindingsView : UserControl
         return row is null
             ? null
             : _host.Configuration.Document.Bindings.FirstOrDefault(item => item.Id == row.Id);
+    }
+
+    private BindingDocument? FromSender(object sender)
+    {
+        var id = sender is FrameworkElement element ? element.Tag as string : null;
+        return id is null
+            ? null
+            : _host.Configuration.Document.Bindings.FirstOrDefault(item => item.Id == id);
+    }
+
+    private static T? FindAncestor<T>(DependencyObject? current) where T : DependencyObject
+    {
+        while (current is not null)
+        {
+            if (current is T match)
+                return match;
+            current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
     }
 
     private static BindingDocument Clone(BindingDocument source) => new()
@@ -243,5 +295,47 @@ public partial class BindingsView : UserControl
         _ => "Nenhuma ação",
     };
 
-    private sealed record BindingRow(string Id, string Device, string Input, string Action, string Profile, string Status);
+    private static string DescribeFull(ConfigurationDocument document, BindingDocument binding)
+    {
+        var detail = Describe(binding);
+        if (binding.ActionKind == BindingKinds.Macro)
+            detail = document.Macros.FirstOrDefault(macro => macro.Id == binding.MacroId)?.Name ?? detail;
+        var kind = binding.ActionKind switch
+        {
+            BindingKinds.Key => "Tecla",
+            BindingKinds.Mouse => "Botão",
+            BindingKinds.Chord => "Atalho",
+            BindingKinds.Text => "Texto",
+            BindingKinds.Suppress => "Desativar",
+            BindingKinds.Macro => "Macro",
+            _ => "Ação",
+        };
+        return $"{kind} · {detail}";
+    }
+
+    private sealed class BindingRow
+    {
+        public BindingRow(string id, string device, string deviceGlyph, string input, string inputGlyph, string action, string profile, bool isEnabled)
+        {
+            Id = id;
+            Device = device;
+            DeviceGlyph = deviceGlyph;
+            Input = input;
+            InputGlyph = inputGlyph;
+            Action = action;
+            Profile = profile;
+            IsEnabled = isEnabled;
+            EnabledVisibility = isEnabled ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public string Id { get; }
+        public string Device { get; }
+        public string DeviceGlyph { get; }
+        public string Input { get; }
+        public string InputGlyph { get; }
+        public string Action { get; }
+        public string Profile { get; }
+        public bool IsEnabled { get; }
+        public Visibility EnabledVisibility { get; }
+    }
 }

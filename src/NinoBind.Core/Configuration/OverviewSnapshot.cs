@@ -12,6 +12,7 @@ public sealed record OverviewSnapshot(
     int DetectedDeviceCount,
     string ActiveProfileName,
     int ActiveBindingCount,
+    int TotalBindingCount,
     int MacroCount,
     EngineState Engine)
 {
@@ -29,6 +30,7 @@ public sealed record OverviewSnapshot(
             DetectedDeviceCount: detectedDeviceCount,
             ActiveProfileName: profile?.Name ?? "",
             ActiveBindingCount: activeBindings,
+            TotalBindingCount: document.Bindings.Count,
             MacroCount: document.Macros.Count,
             Engine: engine);
     }

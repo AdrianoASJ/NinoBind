@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using NinoBind.Hosting;
-using NinoBind.Input;
 
 namespace NinoBind.Views;
 
@@ -18,11 +18,12 @@ public partial class SettingsView : UserControl
         var settings = host.Configuration.Document.Settings;
         TrayBox.IsChecked = settings.CloseToTray;
         EngineBox.IsChecked = settings.StartEngineOnLaunch;
-        LanguageText.Text = settings.Language;
+        TrayStateText.Text = OnOff(settings.CloseToTray);
+        EngineStateText.Text = OnOff(settings.StartEngineOnLaunch);
+        LanguageBox.Items.Add("Português (pt-BR)");
+        LanguageBox.SelectedIndex = 0;
         PathText.Text = host.ConfigurationPath;
-        LogText.Text = host.LogPath + " (registra estados e contagens, nunca teclas ou textos)";
-        EmergencyText.Text = $"{EmergencyHotkey.Label} para as macros, solta as entradas sintetizadas e pausa o motor, mesmo com outra janela em foco.";
-        EngineHotkeyText.Text = $"{EngineHotkey.Label} liga e desliga o motor, mesmo com outra janela em foco. Depois de cada troca, o atalho e o botão ficam bloqueados por 2 segundos.";
+        LogText.Text = host.LogPath;
         Loaded += (_, _) => ShowStartup();
     }
 
@@ -31,12 +32,13 @@ public partial class SettingsView : UserControl
         var status = StartupRegistration.Read();
         StartupBox.IsChecked = status.State is StartupState.On or StartupState.OtherPath;
         StartupBox.IsEnabled = status.State != StartupState.Unknown;
+        StartupStateText.Text = OnOff(StartupBox.IsChecked == true);
         StartupText.Text = status.State switch
         {
-            StartupState.On => "Registrado em HKCU\\...\\Run para este executável.",
-            StartupState.OtherPath => $"Registrado para outro caminho: {status.RegisteredCommand}. Desmarque e marque de novo para usar este executável.",
+            StartupState.On => "Abre minimizado na bandeja do Windows.",
+            StartupState.OtherPath => $"Registrado para outro caminho. Desmarque e marque de novo para usar este executável.",
             StartupState.Unknown => "Não foi possível ler o registro. " + status.Error,
-            _ => "Desligado. Nada foi gravado no registro.",
+            _ => "Abre minimizado na bandeja do Windows.",
         };
     }
 
@@ -48,18 +50,24 @@ public partial class SettingsView : UserControl
         ShowStartup();
     }
 
-    private void TrayClicked(object sender, RoutedEventArgs e) =>
+    private void TrayClicked(object sender, RoutedEventArgs e)
+    {
         Apply(enabled => _host.Configuration.Document.Settings.CloseToTray = enabled, TrayBox);
+        TrayStateText.Text = OnOff(TrayBox.IsChecked == true);
+    }
 
-    private void EngineClicked(object sender, RoutedEventArgs e) =>
+    private void EngineClicked(object sender, RoutedEventArgs e)
+    {
         Apply(enabled => _host.Configuration.Document.Settings.StartEngineOnLaunch = enabled, EngineBox);
+        EngineStateText.Text = OnOff(EngineBox.IsChecked == true);
+    }
 
     private void Apply(Action<bool> set, CheckBox box)
     {
         var enabled = box.IsChecked == true;
         if (_host.TryApply(_ => { set(enabled); return null; }, out var error))
         {
-            StatusText.Text = "Salvo.";
+            StatusText.Text = "";
             _changed();
             return;
         }
@@ -67,4 +75,30 @@ public partial class SettingsView : UserControl
         box.IsChecked = !enabled;
         StatusText.Text = error ?? "A alteração não foi salva.";
     }
+
+    private void OpenConfigClicked(object sender, RoutedEventArgs e) => Reveal(_host.ConfigurationPath);
+
+    private void OpenLogClicked(object sender, RoutedEventArgs e) => Reveal(_host.LogPath);
+
+    private void CopyConfigClicked(object sender, RoutedEventArgs e) => Copy(_host.ConfigurationPath);
+
+    private void CopyLogClicked(object sender, RoutedEventArgs e) => Copy(_host.LogPath);
+
+    private void Copy(string path)
+    {
+        Clipboard.SetText(path);
+        StatusText.Text = "Caminho copiado.";
+    }
+
+    private static void Reveal(string path)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = $"/select,\"{path}\"",
+            UseShellExecute = true,
+        });
+    }
+
+    private static string OnOff(bool on) => on ? "Ligado" : "Desligado";
 }

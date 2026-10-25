@@ -1,39 +1,87 @@
 <UserControl x:Class="NinoBind.Views.ProfilesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DockPanel Margin="28,24">
-        <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="CONJUNTOS DE BINDINGS" Style="{StaticResource EyebrowText}" />
-            <TextBlock Style="{StaticResource TitleText}">
-                <Run Text="Os seus " />
-                <Run Text="perfis" Foreground="{StaticResource AccentBrush}" />
-            </TextBlock>
-            <TextBlock Style="{StaticResource BodyText}" Margin="0,10,0,16"
-                       Text="O motor usa só os bindings do perfil ativo. Ao trocar de perfil, as macros param e as teclas sintetizadas que estavam pressionadas são soltas." />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                <TextBlock Text="Nome" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                <TextBox x:Name="NameBox" Width="240" Tag="Nome do perfil" MaxLength="60" AutomationProperties.Name="Nome do perfil" />
-            </StackPanel>
-            <WrapPanel Margin="0,0,0,8">
-                <Button Content="Novo" Style="{StaticResource PrimaryButton}" Margin="0,0,8,6" Click="AddClicked" AutomationProperties.Name="Novo perfil com o nome digitado" />
-                <Button Content="Renomear" Style="{StaticResource ActionButton}" Margin="0,0,8,6" Click="RenameClicked" AutomationProperties.Name="Renomear perfil selecionado" />
-                <Button Content="Duplicar" Style="{StaticResource ActionButton}" Margin="0,0,8,6" Click="DuplicateClicked" AutomationProperties.Name="Duplicar perfil selecionado com os bindings" />
-                <Button Content="Excluir" Style="{StaticResource ActionButton}" Margin="0,0,8,6" Click="DeleteClicked" AutomationProperties.Name="Excluir perfil selecionado" />
-                <Button Content="Ativar" Style="{StaticResource ActionButton}" Margin="0,0,8,6" Click="ActivateClicked" AutomationProperties.Name="Ativar perfil selecionado" />
-                <Button Content="Exportar" Style="{StaticResource ActionButton}" Margin="0,0,8,6" Click="ExportClicked" AutomationProperties.Name="Exportar perfil selecionado" />
-                <Button Content="Importar" Style="{StaticResource ActionButton}" Margin="0,0,8,6" Click="ImportClicked" AutomationProperties.Name="Importar perfil de arquivo" />
-            </WrapPanel>
-        </StackPanel>
-        <TextBlock x:Name="StatusText" DockPanel.Dock="Bottom" Style="{StaticResource BodyText}" Margin="0,8,0,0" />
-        <ListView x:Name="ProfileList" AutomationProperties.Name="Lista de perfis" SelectionChanged="ProfileSelected">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Nome" DisplayMemberBinding="{Binding Name}" Width="260" />
-                    <GridViewColumn Header="Bindings" DisplayMemberBinding="{Binding Bindings}" Width="90" />
-                    <GridViewColumn Header="Macros usadas" DisplayMemberBinding="{Binding Macros}" Width="120" />
-                    <GridViewColumn Header="Estado" DisplayMemberBinding="{Binding State}" Width="100" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </DockPanel>
+    <Border Style="{StaticResource PageShell}">
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource TitleText}">
+                        <Run Text="Os seus " />
+                        <Run Text="perfis" Foreground="{StaticResource GoldBrush}" />
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource BodyText}" VerticalAlignment="Center"
+                                   Text="O motor usa só os bindings do perfil ativo." />
+                        <Button Style="{StaticResource HelpButton}" Margin="8,0,0,0"
+                                ToolTip="Ao trocar de perfil, as macros param e as teclas sintetizadas que estavam pressionadas são soltas."
+                                AutomationProperties.Name="Ajuda sobre perfis" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <TextBox x:Name="NameBox" Width="200" Tag="Nome do perfil" MaxLength="60" Margin="0,0,8,0"
+                             AutomationProperties.Name="Nome do perfil" />
+                    <Button Content="Novo perfil" Style="{StaticResource PriButton}" Click="AddClicked"
+                            AutomationProperties.Name="Novo perfil com o nome digitado" />
+                </StackPanel>
+            </Grid>
+            <TextBlock x:Name="StatusText" DockPanel.Dock="Bottom" Style="{StaticResource MetaText}" Margin="0,10,0,0" />
+            <ListView x:Name="ProfileList" AutomationProperties.Name="Lista de perfis" SelectionChanged="ProfileSelected">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="280">
+                            <GridViewColumn.Header>
+                                <TextBlock Text="NOME" FontSize="11" FontWeight="SemiBold" />
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                   Foreground="{StaticResource IconBlueBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="BINDINGS" DisplayMemberBinding="{Binding Bindings}" Width="110" />
+                        <GridViewColumn Header="MACROS USADAS" DisplayMemberBinding="{Binding Macros}" Width="130" />
+                        <GridViewColumn Width="110">
+                            <GridViewColumn.Header>
+                                <TextBlock Text="ESTADO" FontSize="11" FontWeight="SemiBold" />
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding State}" VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="200">
+                            <GridViewColumn.Header>
+                                <TextBlock Text="AÇÕES" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8FB;" ToolTip="Ativar"
+                                                Tag="{Binding Id}" Click="ActivateRowClicked" AutomationProperties.Name="Ativar perfil" />
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE70F;" ToolTip="Renomear"
+                                                Tag="{Binding Id}" Click="RenameClicked" AutomationProperties.Name="Renomear perfil" />
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8C8;" ToolTip="Duplicar"
+                                                Tag="{Binding Id}" Click="DuplicateClicked" AutomationProperties.Name="Duplicar perfil" />
+                                        <Button Style="{StaticResource IconButton}" Content="&#xEDE1;" ToolTip="Exportar"
+                                                Tag="{Binding Id}" Click="ExportClicked" AutomationProperties.Name="Exportar perfil" />
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8B5;" ToolTip="Importar"
+                                                Click="ImportClicked" AutomationProperties.Name="Importar perfil" />
+                                        <Button Style="{StaticResource IconButton}" ToolTip="Excluir"
+                                                Tag="{Binding Id}" Click="DeleteClicked" AutomationProperties.Name="Excluir perfil">
+                                            <TextBlock Text="&#xE74D;" Foreground="{StaticResource DangerBrush}" />
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+    </Border>
 </UserControl>
